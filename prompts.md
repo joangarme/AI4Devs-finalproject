@@ -1,70 +1,217 @@
-> Detalla en esta sección los prompts principales utilizados durante la creación del proyecto, que justifiquen el uso de asistentes de código en todas las fases del ciclo de vida del desarrollo. Esperamos un máximo de 3 por sección, principalmente los de creación inicial o  los de corrección o adición de funcionalidades que consideres más relevantes.
-Puedes añadir adicionalmente la conversación completa como link o archivo adjunto si así lo consideras
+## Table of Contents
 
-
-## Índice
-
-1. [Descripción general del producto](#1-descripción-general-del-producto)
-2. [Arquitectura del sistema](#2-arquitectura-del-sistema)
-3. [Modelo de datos](#3-modelo-de-datos)
-4. [Especificación de la API](#4-especificación-de-la-api)
-5. [Historias de usuario](#5-historias-de-usuario)
-6. [Tickets de trabajo](#6-tickets-de-trabajo)
-7. [Pull requests](#7-pull-requests)
+1. [General Product Description](#1-general-product-description)
+2. [System Architecture](#2-system-architecture)
+3. [Data Model](#3-data-model)
+4. [API Specification](#4-api-specification)
+5. [User Stories](#5-user-stories)
+6. [Work Tickets](#6-work-tickets)
+7. [Pull Requests](#7-pull-requests)
 
 ---
 
-## 1. Descripción general del producto
+## 1. General Product Description
 
 **Prompt 1:**
 
+```markdown
+[System message]  
+You are “BudgetMate,” an expert product strategist and UX designer specializing in expense‑tracking and budgeting tools for couples and families.
+
+[User message]  
+My wife and I currently struggle to
+
+1. Track our joint and individual expenses
+2. Enforce the 50/30/20 rule across multiple currencies and accounts
+3. Preserve privacy by self‑hosting on our NAS
+
+**Our setup:**
+
+- I’m paid in EUR into Account A.
+- My wife’s salary arrives in USD into Account B.
+- We funnel 50% of total net income to “Needs,” 30% to “Wants,” and 20% to “Savings.”
+- “Wants” is further split into three sub‑accounts: Common, Hers, Mine.
+- All apps must run on our personal NAS; no third‑party cloud.
+
+**Please do the following:**
+
+1. **Core feature list:** Enumerate the minimum viable features to solve our tracking and budgeting challenges.
+2. **Prioritization:** Sort these features by business impact and user pain relief (High/Medium/Low).
+3. **Value propositions:** For each prioritized feature, describe the benefit we’ll experience.
+4. **Alternative approaches:** Suggest two other ways to address our pain points (e.g. off‑the‑shelf tools, manual workflows).
+5. **Contextual fit:** For each alternative, explain when it’s preferable over building our own solution.
+
+Ask any clarifying questions you need before answering.
+```
+
 **Prompt 2:**
 
+```markdown
+Based on the core functionalities you recommended, describe the **end-to-end customer journey** for my wife and me using this web app.
+
+Please provide:
+
+1. A **step-by-step walkthrough** of our typical usage — from initial setup to ongoing tracking and budgeting.
+2. Each interaction we would have with the system (e.g. logging income, categorizing expenses, viewing reports).
+3. How the app would support **collaborative use** (between two people with separate incomes, currencies, and budgets).
+4. Points where the app would deliver **delight**, reduce friction, or solve major pain points.
+5. Any **notifications, automations, or insights** that would improve our experience.
+
+Use clear, real-world examples when possible. Feel free to ask questions if any assumptions need clarification.
+```
+
 **Prompt 3:**
+
+```markdown
+I'm looking for inspiration before building this app.
+
+1. What are the **most popular open-source** personal finance or budgeting tools that could meet our needs (especially those that support self-hosting on a NAS)?
+2. What are the best **commercial (paid or freemium)** alternatives worth considering?
+
+Please compare both types of solutions using the following criteria:
+
+- **Multi-currency support**
+- **Custom budgeting (50/30/20 split, shared and personal budgets)**
+- **Expense tracking with multiple accounts**
+- **Privacy and self-hosting capabilities**
+- **Collaboration features for couples**
+- **Mobile or responsive web support**
+- **Ease of setup and long-term maintenance**
+
+Then: 3. Recommend the **best-fit option** for our specific use case — or explain why building our own might still be preferable. 4. Highlight any open-source projects that could be used as a foundation or backend for a custom app.
+
+Let me know if you need to clarify any part of our setup before answering.
+```
+
+**Link to chat:**
+
+https://www.perplexity.ai/search/system-message-you-are-budgetm-72a_HAI.R0iOQnF7EE16Rw
 
 ---
 
-## 2. Arquitectura del Sistema
+## 2. System Architecture
 
-### **2.1. Diagrama de arquitectura:**
-
-**Prompt 1:**
-
-**Prompt 2:**
-
-**Prompt 3:**
-
-### **2.2. Descripción de componentes principales:**
+### **2.1. Architecture diagram:**
 
 **Prompt 1:**
 
+```markdown
+You are a senior software architect with experience in designing secure, privacy-first, self-hosted financial web applications.
+
+I am building a NAS-hosted (Synology DS211) web app for my wife and I only to manage our personal and shared finances, enforce budgeting rules like 50/30/20, and handle multi-currency scenarios. Privacy, clarity, and collaboration are critical.
+
+## 🔍 **System Goal (UX value proposition):**
+
+> A smarter way to manage money together—without losing independence.
+
+## ✅ **Key Capabilities & Requirements:**
+
+- **Multi-currency support** with real-time conversion and unified reporting
+- **Automated 50/30/20 split** with shared and individual envelopes
+- **Hybrid categorization engine** (manual + rule-based)
+- **NAS-based self-hosting** with granular access controls
+- **Secure import of financial data** (CSV, OFX, API-ready)
+- **Editable ledger** with audit trail
+- **Custom dashboards** for shared and personal views
+- **Real-time collaboration features** (notes, sync, etc.)
+
+## 🧠 **Your task:**
+
+1. Propose **three viable architecture options** for this system. Each option should include:
+
+   - Backend language/framework (e.g. Python + FastAPI, Node.js + Express)
+   - Frontend stack (e.g. React, Svelte)
+   - Data storage (relational vs. document DB, rationale)
+   - Authentication & user roles (how we manage shared access/privacy)
+   - NAS deployment model (e.g. Docker, VM, bare metal). **IMPORTANT:** My NAS model is a Synology DS211. Your deployment model should be within its capabilities. [Reference: Deploying a web app on Synology DS211](https://www.perplexity.ai/search/deploy-an-web-app-in-synology-3z6xdtRiTa2VvugBxKqKmw)
+   - Scalability and maintainability notes
+
+2. **Compare the options** based on:
+
+   - Ease of self-hosting & maintenance (especially for non-technical users)
+   - Performance and responsiveness
+   - Suitability for privacy and offline-first use
+   - Extensibility for future features (e.g. mobile app, open banking APIs)
+
+3. **Make a recommendation**: Choose the best architecture for our use case and explain why it's the most balanced option given our constraints.
+
+Feel free to ask any clarifying questions about usage patterns, technical skill level, or hosting environment before responding.
+```
+
 **Prompt 2:**
 
-**Prompt 3:**
+```markdown
+Provide a **concise and structured overview** of the web application's architecture and technology stack. The output should include:
 
-### **2.3. Descripción de alto nivel del proyecto y estructura de ficheros**
+1.  A **Mermaid diagram** that clearly represents the **main components** of the application and how they interact (frontend, backend, database, authentication, deployment, etc.).
+
+2.  A **table** listing the **technologies used** for each component, along with a brief explanation of their role.
+
+3.  An explanation of whether the architecture follows a **predefined pattern** (e.g., client-server, microservices, layered), and **why this pattern was chosen**.
+
+4.  A clear **justification for each architectural decision**, considering relevant **constraints** (e.g., platform limitations like no Docker support).
+
+5.  A brief discussion of **key benefits** (e.g., simplicity, scalability, maintainability) and **trade-offs or limitations** (e.g., use of SQLite, lack of CI/CD, manual deployment).
+
+The goal is to communicate the **technical design rationale** of the application in a standalone document that is easy to understand, visually structured, and useful for future maintenance or collaboration.
+```
+
+**Link to chat:**
+
+https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ?1=d
+
+### **2.2. Description of main components:**
 
 **Prompt 1:**
 
-**Prompt 2:**
+```markdown
+List and describe the key components of the system, along with the specific technologies chosen for each and their role in the overall architecture. Use a table to present the information
+```
 
-**Prompt 3:**
+**Link to chat:**
 
-### **2.4. Infraestructura y despliegue**
+https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ?1=d#2
 
-**Prompt 1:**
-
-**Prompt 2:**
-
-**Prompt 3:**
-
-### **2.5. Seguridad**
+### **2.3. High-level project description and file structure**
 
 **Prompt 1:**
 
-**Prompt 2:**
+```markdown
+- Describe the overall folder structure of the backend.
+- Explain the purpose of the main backend directories and if they belong to a specific patter or architecture
+- Describe the frontend folder structure.
+- Explain the role of the key frontend directories and if they belong to a specific patter or architecture
+```
 
-**Prompt 3:**
+**Link to chat:**
+
+https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ?1=d#3
+
+### **2.4. Infrastructure and deployment**
+
+**Prompt 1:**
+
+```markdown
+Describe the infrastructure of the project in detail using a mermaid diagram.
+Additionally, explain the deployment process step by step, including tools, environments, and any relevant configurations. Add the front end to the diagram
+```
+
+**Link to chat:**
+https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ#4
+
+### **2.5. Security**
+
+**Prompt 1:**
+
+```markdown
+You are a security architect responsible for defining the foundational security strategy for this project.
+
+1. Identify and describe the key high-level security practices that should be incorporated into the project. Focus on strategic principles, architectural considerations, and organizational policies — not low-level implementation or code.
+2. For each practice, briefly explain its purpose and, if helpful, provide a conceptual example or scenario to illustrate how it would apply in a real-world context. Avoid technical implementation details.
+```
+
+**Link to chat:**
+https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ#5
 
 ### **2.6. Tests**
 
@@ -76,7 +223,7 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
-### 3. Modelo de Datos
+## 3. Data Model
 
 **Prompt 1:**
 
@@ -86,7 +233,7 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
-### 4. Especificación de la API
+## 4. API Specification
 
 **Prompt 1:**
 
@@ -96,7 +243,7 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
-### 5. Historias de Usuario
+## 5. User Stories
 
 **Prompt 1:**
 
@@ -106,7 +253,7 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
-### 6. Tickets de Trabajo
+## 6. Work Tickets
 
 **Prompt 1:**
 
@@ -116,7 +263,7 @@ Puedes añadir adicionalmente la conversación completa como link o archivo adju
 
 ---
 
-### 7. Pull Requests
+## 7. Pull Requests
 
 **Prompt 1:**
 
