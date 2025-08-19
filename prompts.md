@@ -227,9 +227,51 @@ https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Z
 
 **Prompt 1:**
 
+```markdown
+You are a database architect expert. Let's discuss the data model for a couple's financial management web application with the following requirements:
+
+**Application Context:**
+
+- Two user system for couples to track shared and personal finances
+- Supports multiple currencies with automatic conversion
+- Implements 50/30/20 budgeting rule (Needs/Wants/Savings) with sub-envelopes
+- Tracks transactions with categorization (auto and manual)
+- Supports CSV/OFX bank data imports
+- Maintains audit trail for all changes
+- Has role-based permissions (individual vs shared access)
+- Self-hosted on SQLite database
+
+**Special Considerations:**
+
+- Support for multi-currency with base currency conversion
+- Flexible categorization system with parent/child categories
+- Audit trail that tracks who changed what and when
+- Privacy controls (what each partner can see)
+- Budget periods (monthly, annual, etc.)
+
+Propose me a high level view of the simplest datamodel that would fulfill these requirements. This is totally theoretical. There is nothing implemented yet.
+```
+
 **Prompt 2:**
 
+```markdown
+Generate a mermaid diagram for this data model. Use all allowed parameters for details such as primary and foreign keys
+```
+
 **Prompt 3:**
+
+```markdown
+Describe each entity.
+
+- Include the name and type of each attribute.
+- Sort description
+- Primary and foreign keys
+- Relalations and their type
+- Restriction
+```
+
+**Link to chat:**
+[Link to chat about data model design](.cursorchats/cursor_design_data_model_for_financial.md)
 
 ---
 

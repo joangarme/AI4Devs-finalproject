@@ -514,13 +514,431 @@ This strategic security framework provides a comprehensive foundation for protec
 
 ### **3.1. Data model diagram:**
 
-> Recomendamos usar mermaid para el modelo de datos, y utilizar todos los parámetros que permite la sintaxis para dar el máximo detalle, por ejemplo las claves primarias y foráneas.
+```mermaid
+erDiagram
+    users {
+        INTEGER id PK
+        TEXT email UK
+        TEXT name
+        INTEGER base_currency_id FK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    currencies {
+        INTEGER id PK
+        TEXT code UK
+        TEXT name
+        TEXT symbol
+    }
+
+    exchange_rates {
+        INTEGER id PK
+        INTEGER from_currency_id FK
+        INTEGER to_currency_id FK
+        DECIMAL rate
+        DATE date
+    }
+
+    accounts {
+        INTEGER id PK
+        TEXT name
+        TEXT account_type
+        INTEGER currency_id FK
+        DECIMAL initial_balance
+        TEXT ownership_type
+        INTEGER owner_user_id FK
+        BOOLEAN is_active
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    categories {
+        INTEGER id PK
+        TEXT name
+        INTEGER parent_id FK
+        TEXT budget_type
+        BOOLEAN is_system
+        INTEGER created_by FK
+        TIMESTAMP created_at
+    }
+
+    transactions {
+        INTEGER id PK
+        INTEGER account_id FK
+        DECIMAL amount
+        DECIMAL base_amount
+        DATE transaction_date
+        TEXT description
+        INTEGER category_id FK
+        TEXT transaction_type
+        INTEGER linked_transaction_id FK
+        TEXT import_id
+        INTEGER created_by FK
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    budgets {
+        INTEGER id PK
+        TEXT name
+        TEXT period_type
+        DATE start_date
+        DATE end_date
+        BOOLEAN is_active
+        INTEGER created_by FK
+        TIMESTAMP created_at
+    }
+
+    budget_envelopes {
+        INTEGER id PK
+        INTEGER budget_id FK
+        INTEGER category_id FK
+        DECIMAL allocated_amount
+        INTEGER currency_id FK
+        TEXT envelope_type
+    }
+
+    permissions {
+        INTEGER id PK
+        INTEGER user_id FK
+        TEXT resource_type
+        INTEGER resource_id
+        TEXT permission_type
+    }
+
+    audit_log {
+        INTEGER id PK
+        INTEGER user_id FK
+        TEXT action
+        TEXT table_name
+        INTEGER record_id
+        TEXT old_values
+        TEXT new_values
+        TIMESTAMP timestamp
+    }
+
+    imports {
+        INTEGER id PK
+        INTEGER user_id FK
+        INTEGER account_id FK
+        TEXT file_name
+        TEXT file_type
+        INTEGER transaction_count
+        TEXT status
+        TEXT error_message
+        TIMESTAMP imported_at
+    }
+
+    users ||--o{ accounts : "owns"
+    users ||--o{ categories : "creates"
+    users ||--o{ transactions : "creates"
+    users ||--o{ budgets : "creates"
+    users ||--o{ permissions : "has"
+    users ||--o{ audit_log : "generates"
+    users ||--o{ imports : "performs"
+
+    currencies ||--o{ users : "base currency"
+    currencies ||--o{ accounts : "denominated in"
+    currencies ||--o{ budget_envelopes : "allocated in"
+    currencies ||--o{ exchange_rates : "from"
+    currencies ||--o{ exchange_rates : "to"
+
+    accounts ||--o{ transactions : "contains"
+    accounts ||--o{ imports : "imports to"
+
+    categories ||--o{ categories : "parent of"
+    categories ||--o{ transactions : "categorizes"
+    categories ||--o{ budget_envelopes : "budgeted"
+
+    transactions ||--o| transactions : "linked transfer"
+
+    budgets ||--o{ budget_envelopes : "contains"
+```
 
 ### **3.2. Description of entities:**
 
-> Recuerda incluir el máximo detalle de cada entidad, como el nombre y tipo de cada atributo, descripción breve si procede, claves primarias y foráneas, relaciones y tipo de relación, restricciones (unique, not null…), etc.
+1. **Users**
 
----
+   Core user accounts for the two partners in the financial management system.
+
+   Attributes:
+
+   - `id` (INTEGER) - Primary Key
+   - `email` (TEXT) - Unique constraint, user's email address
+   - `name` (TEXT) - User's display name
+   - `base_currency_id` (INTEGER) - Foreign Key to currencies table
+   - `created_at` (TIMESTAMP) - Account creation timestamp
+   - `updated_at` (TIMESTAMP) - Last modification timestamp
+
+   Relations:
+
+   - **Has one** base currency (currencies)
+   - **Has many** accounts (one-to-many)
+   - **Has many** created categories (one-to-many)
+   - **Has many** created transactions (one-to-many)
+   - **Has many** created budgets (one-to-many)
+   - **Has many** permissions (one-to-many)
+   - **Has many** audit log entries (one-to-many)
+   - **Has many** imports (one-to-many)
+
+   Restrictions:
+
+   - Email must be unique across all users
+   - Base currency is required |
+
+2. **Currencies**
+
+   Supported currencies for multi-currency transaction tracking.
+
+   Attributes:
+
+   - `id` (INTEGER) - Primary Key
+   - `code` (TEXT) - Unique constraint, ISO currency code (USD, EUR, etc.)
+   - `name` (TEXT) - Full currency name
+   - `symbol` (TEXT) - Currency symbol ($, €, etc.)
+
+   Relations:
+
+   - **Used by many** users as base currency (one-to-many)
+   - **Used by many** accounts (one-to-many)
+   - **Used by many** budget envelopes (one-to-many)
+   - **Has many** exchange rates as source (one-to-many)
+   - **Has many** exchange rates as target (one-to-many)
+
+   Restrictions:
+
+   - Currency code must be unique
+
+3. **Exchange Rates**
+
+   Historical exchange rates for currency conversion.
+
+   Attributes:
+
+   - `id` (INTEGER) - Primary Key
+   - `from_currency_id` (INTEGER) - Foreign Key to currencies (source)
+   - `to_currency_id` (INTEGER) - Foreign Key to currencies (target)
+   - `rate` (DECIMAL(10,6)) - Exchange rate value
+   - `date` (DATE) - Date of the exchange rate
+
+   Relations:
+
+   - **Belongs to** one source currency (many-to-one)
+   - **Belongs to** one target currency (many-to-one)
+
+   Restrictions:
+
+   - Unique constraint on (from_currency_id, to_currency_id, date)
+   - Rate must be positive
+
+4. **Accounts**
+
+   Bank accounts, credit cards, and other financial accounts.
+
+   Attributes:
+
+   - `id` (INTEGER) - Primary Key
+   - `name` (TEXT) - Account name/description
+   - `account_type` (TEXT) - Type (checking, savings, credit_card, etc.)
+   - `currency_id` (INTEGER) - Foreign Key to currencies
+   - `initial_balance` (DECIMAL(10,2)) - Starting balance, default 0
+   - `ownership_type` (TEXT) - 'personal_user1', 'personal_user2', or 'shared'
+   - `owner_user_id` (INTEGER) - Foreign Key to users (NULL if shared)
+   - `is_active` (BOOLEAN) - Active status, default TRUE
+   - `created_at` (TIMESTAMP) - Creation timestamp
+   - `updated_at` (TIMESTAMP) - Last modification timestamp
+
+   Relations:
+
+   - **Belongs to** one currency (many-to-one)
+   - **Belongs to** one user if personal (many-to-one, optional)
+   - **Has many** transactions (one-to-many)
+   - **Has many** imports (one-to-many)
+
+   Restrictions:
+
+   - If ownership_type is 'personal_user1' or 'personal_user2', owner_user_id must be set
+   - If ownership_type is 'shared', owner_user_id must be NULL
+
+5. **Categories**
+
+   Hierarchical transaction categories supporting the 50/30/20 budget rule.
+
+   Attributes:
+
+   - `id` (INTEGER) - Primary Key
+   - `name` (TEXT) - Category name
+   - `parent_id` (INTEGER) - Foreign Key to categories (self-referencing)
+   - `budget_type` (TEXT) - 'needs', 'wants', or 'savings' (for top-level)
+   - `is_system` (BOOLEAN) - System-defined category flag, default FALSE
+   - `created_by` (INTEGER) - Foreign Key to users
+   - `created_at` (TIMESTAMP) - Creation timestamp
+
+   Relations:
+
+   - **Belongs to** one parent category (many-to-one, optional)
+   - **Has many** child categories (one-to-many)
+   - **Created by** one user (many-to-one)
+   - **Used by many** transactions (one-to-many)
+   - **Used by many** budget envelopes (one-to-many)
+
+   Restrictions:
+
+   - Parent categories cannot create circular references
+   - Top-level categories should have budget_type set
+
+6. **Transactions**
+
+   Financial transactions with multi-currency support and categorization.
+
+   Attributes:
+
+   - `id` (INTEGER) - Primary Key
+   - `account_id` (INTEGER) - Foreign Key to accounts
+   - `amount` (DECIMAL(10,2)) - Amount in account currency
+   - `base_amount` (DECIMAL(10,2)) - Amount converted to user's base currency
+   - `transaction_date` (DATE) - Date of transaction
+   - `description` (TEXT) - Transaction description
+   - `category_id` (INTEGER) - Foreign Key to categories
+   - `transaction_type` (TEXT) - 'income', 'expense', or 'transfer'
+   - `linked_transaction_id` (INTEGER) - Foreign Key to transactions (self-referencing)
+   - `import_id` (TEXT) - External ID for imported transactions
+   - `created_by` (INTEGER) - Foreign Key to users
+   - `created_at` (TIMESTAMP) - Creation timestamp
+   - `updated_at` (TIMESTAMP) - Last modification timestamp
+
+   Relations:
+
+   - **Belongs to** one account (many-to-one)
+   - **Belongs to** one category (many-to-one, optional)
+   - **Created by** one user (many-to-one)
+   - **Linked to** one other transaction for transfers (one-to-one, optional)
+
+   Restrictions:
+
+   - Amount must match transaction_type (positive for income, negative for expense)
+   - Linked transactions must be paired (transfer in/out)
+
+7. **Budgets**
+
+   Budget periods for financial planning.
+
+   Attributes:
+
+   - `id` (INTEGER) - Primary Key
+   - `name` (TEXT) - Budget name
+   - `period_type` (TEXT) - 'monthly', 'annual', or 'custom'
+   - `start_date` (DATE) - Budget period start
+   - `end_date` (DATE) - Budget period end
+   - `is_active` (BOOLEAN) - Active status, default TRUE
+   - `created_by` (INTEGER) - Foreign Key to users
+   - `created_at` (TIMESTAMP) - Creation timestamp
+
+   Relations:
+
+   - **Created by** one user (many-to-one)
+   - **Has many** budget envelopes (one-to-many)
+
+   Restrictions:
+
+   - End date must be after start date
+   - Only one active budget per period
+
+8. **Budget Envelopes**
+
+   Budget allocations for specific categories within a budget period.
+
+   Attributes:
+
+   - `id` (INTEGER) - Primary Key
+   - `budget_id` (INTEGER) - Foreign Key to budgets
+   - `category_id` (INTEGER) - Foreign Key to categories
+   - `allocated_amount` (DECIMAL(10,2)) - Budget allocation
+   - `currency_id` (INTEGER) - Foreign Key to currencies
+   - `envelope_type` (TEXT) - 'needs', 'wants', or 'savings'
+
+   Relations:
+
+   - **Belongs to** one budget (many-to-one)
+   - **Belongs to** one category (many-to-one)
+   - **Uses** one currency (many-to-one)
+
+   Restrictions:
+
+   - Allocated amount must be positive
+   - Envelope type must match category's budget type
+
+9. **Permissions**
+
+   Granular access control for resources between partners.
+
+   Attributes:
+
+   - `id` (INTEGER) - Primary Key
+   - `user_id` (INTEGER) - Foreign Key to users
+   - `resource_type` (TEXT) - 'account', 'transaction', or 'budget'
+   - `resource_id` (INTEGER) - ID of the specific resource
+   - `permission_type` (TEXT) - 'view', 'edit', or 'delete'
+
+   Relations:
+
+   - **Belongs to** one user (many-to-one)
+
+   Restrictions:
+
+   - Unique constraint on (user_id, resource_type, resource_id, permission_type)
+   - Resource_id must exist in the corresponding table
+
+10. **Audit Log**
+
+    Complete audit trail of all data changes.
+
+    Attributes:
+
+    - `id` (INTEGER) - Primary Key
+    - `user_id` (INTEGER) - Foreign Key to users
+    - `action` (TEXT) - 'create', 'update', or 'delete'
+    - `table_name` (TEXT) - Name of affected table
+    - `record_id` (INTEGER) - ID of affected record
+    - `old_values` (TEXT) - JSON of previous values
+    - `new_values` (TEXT) - JSON of new values
+    - `timestamp` (TIMESTAMP) - Action timestamp, default CURRENT_TIMESTAMP
+
+    Relations:
+
+    - **Created by** one user (many-to-one)
+
+    Restrictions:
+
+    - Old_values is NULL for create actions
+    - New_values is NULL for delete actions
+
+11. **Imports**
+
+    History of bank data imports from CSV/OFX files.
+
+    Attributes:
+
+    - `id` (INTEGER) - Primary Key
+    - `user_id` (INTEGER) - Foreign Key to users
+    - `account_id` (INTEGER) - Foreign Key to accounts
+    - `file_name` (TEXT) - Name of imported file
+    - `file_type` (TEXT) - 'csv' or 'ofx'
+    - `transaction_count` (INTEGER) - Number of transactions imported
+    - `status` (TEXT) - 'pending', 'completed', or 'failed'
+    - `error_message` (TEXT) - Error details if failed
+    - `imported_at` (TIMESTAMP) - Import timestamp
+
+    Relations:
+
+    - **Performed by** one user (many-to-one)
+    - **Imports to** one account (many-to-one)
+
+    Restrictions:
+
+    - Transaction_count must be non-negative
+    - Error_message only set when status is 'failed'
 
 ## 4. API Specification
 
@@ -561,3 +979,7 @@ This strategic security framework provides a comprehensive foundation for protec
 **Pull Request 2**
 
 **Pull Request 3**
+
+```
+
+```
