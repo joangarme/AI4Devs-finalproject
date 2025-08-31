@@ -83,9 +83,7 @@ Then: 3. Recommend the **best-fit option** for our specific use case — or expl
 Let me know if you need to clarify any part of our setup before answering.
 ```
 
-**Link to chat:**
-
-https://www.perplexity.ai/search/system-message-you-are-budgetm-72a_HAI.R0iOQnF7EE16Rw
+**[Link to chat](https://www.perplexity.ai/search/system-message-you-are-budgetm-72a_HAI.R0iOQnF7EE16Rw)**
 
 ---
 
@@ -156,9 +154,7 @@ Provide a **concise and structured overview** of the web application's architect
 The goal is to communicate the **technical design rationale** of the application in a standalone document that is easy to understand, visually structured, and useful for future maintenance or collaboration.
 ```
 
-**Link to chat:**
-
-https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ?1=d
+**[Link to chat](https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ?1=d)**
 
 ### **2.2. Description of main components:**
 
@@ -168,9 +164,7 @@ https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Z
 List and describe the key components of the system, along with the specific technologies chosen for each and their role in the overall architecture. Use a table to present the information
 ```
 
-**Link to chat:**
-
-https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ?1=d#2
+**[Link to chat](https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ?1=d#2)**
 
 ### **2.3. High-level project description and file structure**
 
@@ -183,9 +177,7 @@ https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Z
 - Explain the role of the key frontend directories and if they belong to a specific patter or architecture
 ```
 
-**Link to chat:**
-
-https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ?1=d#3
+**[Link to chat](https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ?1=d#3)**
 
 ### **2.4. Infrastructure and deployment**
 
@@ -196,8 +188,7 @@ Describe the infrastructure of the project in detail using a mermaid diagram.
 Additionally, explain the deployment process step by step, including tools, environments, and any relevant configurations. Add the front end to the diagram
 ```
 
-**Link to chat:**
-https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ#4
+**[Link to chat](https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ#4)**
 
 ### **2.5. Security**
 
@@ -210,8 +201,7 @@ You are a security architect responsible for defining the foundational security 
 2. For each practice, briefly explain its purpose and, if helpful, provide a conceptual example or scenario to illustrate how it would apply in a real-world context. Avoid technical implementation details.
 ```
 
-**Link to chat:**
-https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ#5
+**[Link to chat](https://www.perplexity.ai/search/you-are-a-senior-software-arch-B8HHDJFYQha9KB3Zu2t0gQ#5)**
 
 ### **2.6. Tests**
 
@@ -279,9 +269,43 @@ Describe each entity.
 
 **Prompt 1:**
 
-**Prompt 2:**
+```markdown
+You are a senior backend engineer specializing in RESTful API design and OpenAPI specifications.
 
-**Prompt 3:**
+## Task
+
+Generate OpenAPI 3.0 @OpenAPI 3.0 specifications for the THREE most critical API endpoints of the application described in @## 1. General Product Description with the following data model @## 3. Data Model
+
+## Requirements for Each Endpoint
+
+For each endpoint, provide:
+
+- Complete OpenAPI specification including:
+  - Path and HTTP method
+  - Summary and description
+  - Request parameters (path, query, body)
+  - Request body schema (if applicable)
+  - Response schemas for all status codes
+  - Security requirements (JWT Bearer token)
+  - Tags for API organization
+- Realistic example request and response
+- Consider multi-currency scenarios and partner permissions
+
+## Specific Considerations
+
+1. All monetary amounts should include currency information
+2. Responses should handle both account currency and user's base currency
+3. Include proper error responses for unauthorized access to partner's personal data
+4. Date formats should follow ISO 8601
+5. Pagination should be implemented for list endpoints
+6. Include filtering capabilities where appropriate
+
+## Output Format
+
+Present the API specification in YAML format following OpenAPI 3.0 standards, with example requests and responses.
+```
+
+**[Link to chat](.cursorchats/cursor_generate_openapi_specifications.md)**
 
 ---
 
