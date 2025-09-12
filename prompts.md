@@ -313,9 +313,35 @@ Present the API specification in YAML format following OpenAPI 3.0 standards, wi
 
 **Prompt 1:**
 
+```markdown
+Analyze this app description @readme.md and create a comprehensive backlog structure:
+
+For this app, please:
+
+1. Identify 3-4 main user personas
+2. Extract 6-8 high-level epics (group related features)
+3. For each epic, provide:
+   - Epic name and description
+   - Business value
+   - Key features included
+   - Priority level (High/Medium/Low)
+
+Format as a clear, structured list.
+Save it as `backlog.md` in the root.
+```
+
 **Prompt 2:**
 
-**Prompt 3:**
+```markdown
+Create detailed user stories:
+
+For each epic, provide:
+
+1. 3-5 user stories in "As a [persona], I want [goal] so that [benefit]" format
+2. Acceptance criteria for each user story
+```
+
+**[Link to chat](.cursorchats/cursor_create_app_backlog_structure.md)**
 
 ---
 

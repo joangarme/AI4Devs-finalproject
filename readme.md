@@ -949,13 +949,58 @@ erDiagram
 
 ## 5. User Stories
 
-> Documenta 3 de las historias de usuario principales utilizadas durante el desarrollo, teniendo en cuenta las buenas prácticas de producto al respecto.
+### Epic 1: User Management & Authentication
 
-**Historia de Usuario 1**
+#### US1.1: Account Registration
 
-**Historia de Usuario 2**
+**As a** Sarah (Budget-Conscious Partner),  
+**I want** to create a secure account with my email and password,  
+**So that** I can start tracking my finances privately and securely.
 
-**Historia de Usuario 3**
+**Acceptance Criteria:**
+
+- Email validation with proper format checking
+- Password requirements: minimum 8 characters, 1 uppercase, 1 number, 1 special character
+- Email verification sent upon registration
+- Clear error messages for validation failures
+- Success confirmation and redirect to login
+- Duplicate email prevention
+
+### Epic 2: Transaction Management Core
+
+#### US2.1: Add Transaction
+
+**As a** Sarah (Budget-Conscious Partner),  
+**I want** to quickly add income and expense transactions,  
+**So that** I can maintain an accurate record of all my financial activities.
+
+**Acceptance Criteria:**
+
+- Transaction form with: amount, date, description, category, account
+- Auto-populate today's date
+- Category suggestions based on description
+- Support for recurring transactions
+- Save and add another option
+- Validation for required fields
+- Success confirmation with transaction details
+
+### Epic 3: Automated Budget Engine
+
+#### US3.1: Automatic 50/30/20 Budget Creation
+
+**As a** David (Financial Planner),  
+**I want** my income automatically split into needs (50%), wants (30%), and savings (20%),  
+**So that** I can follow proven budgeting principles without manual calculations.
+
+**Acceptance Criteria:**
+
+- Automatic calculation on income transaction
+- Visual representation of splits
+- Customizable percentage splits
+- Multiple income sources handled
+- Monthly/annual view options
+- Remaining budget displayed real-time
+- Rollover options for unused budgets
 
 ---
 
