@@ -305,6 +305,12 @@ For each endpoint, provide:
 Present the API specification in YAML format following OpenAPI 3.0 standards, with example requests and responses.
 ```
 
+**Context files used:**
+
+- [OpenAPI 3.0](https://spec.openapis.org/oas/v3.0.4.html)
+- [General Product Description](#1-general-product-description)
+- [Data Model](#3-data-model)
+
 **[Link to chat](.cursorchats/cursor_generate_openapi_specifications.md)**
 
 ---
@@ -330,6 +336,10 @@ Format as a clear, structured list.
 Save it as `backlog.md` in the root.
 ```
 
+**Context files used:**
+
+- [readme.md](./readme.md)
+
 **Prompt 2:**
 
 ```markdown
@@ -349,9 +359,50 @@ For each epic, provide:
 
 **Prompt 1:**
 
-**Prompt 2:**
+```markdown
+You are a technical project manager skilled in breaking down user stories into manageable development tasks.
 
-**Prompt 3:**
+## Your Task
+
+Using the methodology defined in @task-breakdown-methodology.md, create a comprehensive task breakdown for the @#### US1.1: Account Registration and save it as a markdown file in `./backlog/Epic 1: User Management Core`.
+
+## Instructions
+
+1. **Read and understand** the complete methodology in @task-breakdown-methodology.md
+2. **Analyze** the user story and its acceptance criteria
+3. **Create** a task breakdown following the exact template and format from the methodology
+4. **Generate** a markdown file with the breakdown
+
+## File Naming Convention
+
+Name the file using this pattern: `[StoryID]-[brief-description]-tasks.md`
+
+Examples:
+
+- `US1.1-account-registration-tasks.md`
+- `US2.1-add-transaction-tasks.md`
+- `US3.1-budget-automation-tasks.md`
+
+## Quality Checks
+
+Before creating the file, verify:
+
+- [ ] Every acceptance criterion is addressed by at least one task
+- [ ] No task exceeds 1 story point
+- [ ] Each task includes testing requirements
+- [ ] Tasks follow logical build sequence
+- [ ] File name follows the convention
+- [ ] All tasks use the exact template format
+
+Generate the complete task breakdown file now.
+```
+
+**Context files used:**
+
+- [task-breakdown-methodology.md](./task-breakdown-methodology.md)
+- [US1.1: Account Registration](./backlog/backlog.md#us11-account-registration)
+
+**[Link to chat](.cursorchats/cursor_create_app_backlog_structure.md)**
 
 ---
 

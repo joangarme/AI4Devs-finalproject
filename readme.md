@@ -31,7 +31,7 @@ Web app to track couple's money expending and budgeting.
 
 ### **0.5. URL or compressed file of the repository:**
 
-> Puedes tenerlo alojado en público o en privado, en cuyo caso deberás compartir los accesos de manera segura. Puedes enviarlos a [alvaro@lidr.co](mailto:alvaro@lidr.co) usando algún servicio como [onetimesecret](https://onetimesecret.com/). También puedes compartir por correo un archivo zip con el contenido
+https://github.com/joangarme/AI4Devs-finalproject
 
 ---
 
@@ -1006,13 +1006,110 @@ erDiagram
 
 ## 6. Work Tickets
 
-> Documenta 3 de los tickets de trabajo principales del desarrollo, uno de backend, uno de frontend, y uno de bases de datos. Da todo el detalle requerido para desarrollar la tarea de inicio a fin teniendo en cuenta las buenas prácticas al respecto.
+### Task 1: Task ID: US1.1-T1
 
-**Ticket 1**
+**Type**: [Database]  
+**Title**: Create users table schema  
+**Story Points**: 0.5  
+**Dependencies**: None
 
-**Ticket 2**
+#### Description
 
-**Ticket 3**
+**What**: Create the users table with fields for authentication  
+**Input**: Data model specification for user entity  
+**Output**: Migration script for users table  
+**Boundary**: Only base table structure, no indexes or verification tables
+
+#### Acceptance Criteria
+
+- [ ] Table includes: id, email, password_hash, created_at, updated_at, is_active, is_verified
+- [ ] Email field has unique constraint
+- [ ] Migration script is reversible
+- [ ] Appropriate data types used (VARCHAR for email, TEXT for password_hash)
+
+#### Testing Requirements
+
+- [ ] Test migration up and down functionality
+- [ ] Verify all columns created with correct types
+- [ ] Test unique constraint on email
+- [ ] Verify default values are set correctly
+
+#### Technical Notes
+
+- Use Alembic for migration management
+- Password_hash field should accommodate bcrypt output (60 chars)
+- Consider adding fields for future OAuth integration
+
+### Task 2: Task ID: US1.1-T3
+
+**Type**: [Backend]  
+**Title**: Create user authentication Pydantic models  
+**Story Points**: 0.5  
+**Dependencies**: None
+
+#### Description
+
+**What**: Define request/response models for user registration  
+**Input**: API specification for authentication endpoints  
+**Output**: Pydantic model classes in schemas/auth.py  
+**Boundary**: Only data models, no validation logic beyond basic types
+
+#### Acceptance Criteria
+
+- [ ] UserRegisterRequest model with email and password fields
+- [ ] UserRegisterResponse model with user info (excluding password)
+- [ ] EmailVerificationRequest model
+- [ ] Proper typing for all fields
+
+#### Testing Requirements
+
+- [ ] Test model instantiation with valid data
+- [ ] Test basic field type validation
+- [ ] Test serialization/deserialization
+- [ ] Verify password field is excluded from response
+
+#### Technical Notes
+
+- Use Pydantic v2 syntax
+- Email field should use EmailStr type
+- Password should be SecretStr in request model
+
+### Task ID: US1.1-T10
+
+**Type**: [Frontend]  
+**Title**: Build registration form component  
+**Story Points**: 1  
+**Dependencies**: None
+
+#### Description
+
+**What**: Create React component for registration form  
+**Input**: UI mockups and form requirements  
+**Output**: RegistrationForm.tsx component  
+**Boundary**: UI component only, no API integration
+
+#### Acceptance Criteria
+
+- [ ] Email and password input fields
+- [ ] Password strength indicator
+- [ ] Real-time validation feedback
+- [ ] Submit button with loading state
+- [ ] Accessible form with proper labels
+
+#### Testing Requirements
+
+- [ ] Component renders all fields
+- [ ] Password strength indicator works correctly
+- [ ] Form validation prevents invalid submission
+- [ ] Loading states display properly
+- [ ] Accessibility tests (ARIA, keyboard nav)
+- [ ] Responsive design tests
+
+#### Technical Notes
+
+- Use React Hook Form for form management
+- Consider zxcvbn for password strength
+- Implement debounced validation
 
 ---
 
