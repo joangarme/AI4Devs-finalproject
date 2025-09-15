@@ -169,6 +169,64 @@ git push origin production
 1. Task → User Story (with code review)
 2. User Story → Epic (with code review)
 
+## Pull Request Template
+
+### PR Title Format
+
+Use Jira issue format:
+
+- `AI4DFP-123: [Ticket description]`
+
+### PR Description Template
+
+```markdown
+## Jira
+
+- **Epic**: [AI4DFP-1](https://your-jira-instance.atlassian.net/browse/AI4DFP-1) - Epic Name
+- **Story**: [AI4DFP-124](https://your-jira-instance.atlassian.net/browse/AI4DFP-124) - Story Name
+- **Issue**: [AI4DFP-123](https://your-jira-instance.atlassian.net/browse/AI4DFP-123)
+
+## Summary
+
+Brief description of what this PR accomplishes.
+
+## Changes
+
+- List of key changes made
+- Files added/modified/deleted
+- New features or fixes implemented
+
+## Testing
+
+- [ ] Manual testing completed
+- [ ] Unit tests added/updated
+- [ ] Integration tests pass
+- [ ] No regressions introduced
+
+## Coverage
+
+| File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Lines |
+| ------------ | ------- | -------- | ------- | ------- | --------------- |
+| path/to/file | 100%    | 100%     | 100%    | 100%    | -               |
+| path/to/file | 94.11%  | 100%     | 50%     | 94.11%  | 39              |
+
+## Screenshots/Demo
+
+Include screenshots or demo links for UI changes.
+
+## Deployment Notes
+
+Any special deployment considerations or environment variables needed.
+
+## Checklist
+
+- [ ] Code follows style guidelines
+- [ ] Self-review completed
+- [ ] Comments added for complex logic
+- [ ] Documentation updated
+- [ ] No console.log or debug statements
+```
+
 ## Best Practices
 
 ### 1. Branch Naming Conventions
