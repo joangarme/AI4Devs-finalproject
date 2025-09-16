@@ -218,6 +218,16 @@ Include screenshots or demo links for UI changes.
 
 Any special deployment considerations or environment variables needed.
 
+## Self-Review Checklist
+
+- [ ] I have tested this code locally
+- [ ] I have added/updated tests for new functionality
+- [ ] I have reviewed my own code line-by-line
+- [ ] I have checked for potential security issues
+- [ ] I have updated documentation as needed
+- [ ] I have considered edge cases and error handling
+- [ ] I have removed all debug code and console logs
+
 ## Checklist
 
 - [ ] Code follows style guidelines
@@ -247,25 +257,72 @@ Follow conventional commits specification:
 - `test:` Test additions or changes
 - `chore:` Build process or auxiliary tool changes
 
-### 3. Branch Protection Rules
+### 3. Branch Protection Rules (Single Developer)
+
+> **Note**: These rules are adapted for a single developer workflow, focusing on automated checks and self-review processes rather than peer approvals.
 
 #### Production Branch
 
-- Require pull request reviews (2 approvals)
-- Require status checks to pass
-- Require branches to be up to date
-- Include administrators in restrictions
+- **No approval requirements** (since self-approval isn't possible)
+- Require status checks to pass:
+  - All tests must pass
+  - Code coverage thresholds met (e.g., 80% minimum)
+  - Linting and code quality checks pass
+- Require branches to be up to date before merging
+- Enforce linear history (optional but recommended)
+- **Mandatory PR process** with self-review checklist
+- Block direct pushes (force all changes through PRs)
 
 #### UAT Branch
 
-- Require pull request reviews (1 approval)
-- Require status checks to pass
-- Require branches to be up to date
+- **No approval requirements**
+- Require status checks to pass:
+  - All tests must pass
+  - Build must succeed
+- Require branches to be up to date before merging
+- **Mandatory PR process** for audit trail
+- Consider adding deployment preview checks
 
 #### Dev Branch
 
-- Require pull request reviews (1 approval)
-- Require status checks to pass
+- **No approval requirements**
+- Require status checks to pass:
+  - Unit tests must pass
+  - Linting checks pass
+- **Optional PR process** (direct merges allowed for epic → dev)
+
+#### Additional Solo Developer Safeguards
+
+Since peer review isn't available, implement these practices:
+
+1. **Mandatory Self-Review Checklist** in PR descriptions:
+
+   ```markdown
+   ## Self-Review Checklist
+
+   - [ ] I have tested this code locally
+   - [ ] I have added/updated tests for new functionality
+   - [ ] I have reviewed my own code line-by-line
+   - [ ] I have checked for potential security issues
+   - [ ] I have updated documentation as needed
+   - [ ] I have considered edge cases and error handling
+   - [ ] I have removed all debug code and console logs
+   ```
+
+2. **Automated Code Review Tools**:
+
+   - Set up CodeQL or similar security scanning
+   - Use SonarQube or similar for code quality metrics
+   - Implement dependency vulnerability scanning
+
+3. **Time-Delayed Merges** (optional):
+
+   - Consider implementing a "cooling-off" period where PRs must be open for at least 24 hours before merging to production
+   - This allows for second thoughts and catching issues after a break
+
+4. **Regular Code Review Sessions**:
+   - Schedule weekly self-review sessions to look at recent merges
+   - Consider getting periodic external code reviews for critical features
 
 ### 4. Keeping Branches Updated
 

@@ -8,7 +8,12 @@ This document defines the methodology for breaking down user stories into granul
 
 ```
 Epic
-└── User Story
+└── User Story 1
+    ├── Work Task 1 [Database]
+    ├── Work Task 2 [Backend]
+    ├── Work Task 3 [Frontend]
+    └── Work Task 4 [DevOps]
+└── User Story 2
     ├── Work Task 1 [Database]
     ├── Work Task 2 [Backend]
     ├── Work Task 3 [Frontend]
