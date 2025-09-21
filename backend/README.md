@@ -47,10 +47,17 @@ Backend API for the Personal Finance Tracker application built with FastAPI.
    pip install -r requirements.txt
    ```
 
-5. **Run the development server** (when implemented):
+5. **Run the development server**:
+
    ```bash
    uvicorn app.main:app --reload
    ```
+
+   The server will start on `http://localhost:8000` with:
+
+   - Health check endpoint: `http://localhost:8000/health`
+   - Interactive API docs: `http://localhost:8000/docs`
+   - OpenAPI spec: `http://localhost:8000/openapi.json`
 
 ### Virtual Environment Management
 
@@ -142,6 +149,8 @@ The following core dependencies are installed and configured:
 - **SQLAlchemy 2.0.23** - SQL toolkit and Object-Relational Mapping (ORM) library
 - **Alembic 1.12.1** - Database migration tool for SQLAlchemy
 - **Pydantic 2.11.9** - Data validation and settings management (included with FastAPI)
+- **Pytest 7.4.3** - Testing framework for Python
+- **HTTPX 0.25.2** - HTTP client for testing FastAPI applications
 
 All dependencies are pinned to specific versions in `requirements.txt` for reproducible builds.
 
@@ -158,6 +167,8 @@ python -c "import fastapi; print(f'FastAPI version: {fastapi.__version__}')"
 python -c "import uvicorn; print(f'Uvicorn version: {uvicorn.__version__}')"
 python -c "import sqlalchemy; print(f'SQLAlchemy version: {sqlalchemy.__version__}')"
 python -c "import alembic; print(f'Alembic version: {alembic.__version__}')"
+python -c "import pytest; print(f'Pytest version: {pytest.__version__}')"
+python -c "import httpx; print(f'HTTPX version: {httpx.__version__}')"
 ```
 
 ### Development Workflow
@@ -167,6 +178,42 @@ python -c "import alembic; print(f'Alembic version: {alembic.__version__}')"
 3. Update requirements files when adding dependencies
 4. Run tests before committing changes
 5. Deactivate virtual environment when done
+
+### Running Tests
+
+The project includes comprehensive tests for the FastAPI application:
+
+```bash
+# Run all tests
+python -m pytest
+
+# Run tests with verbose output
+python -m pytest -v
+
+# Run specific test file
+python -m pytest tests/app/test_main.py -v
+
+# Run tests with coverage (when coverage is configured)
+python -m pytest --cov=app
+```
+
+### API Endpoints
+
+The FastAPI application currently includes:
+
+- **GET /health** - Health check endpoint that returns API status
+- **GET /docs** - Interactive API documentation (Swagger UI)
+- **GET /openapi.json** - OpenAPI specification in JSON format
+
+#### Health Endpoint Response
+
+```json
+{
+  "status": "healthy",
+  "message": "Personal Finance Tracker API is running",
+  "version": "0.1.0"
+}
+```
 
 ### Troubleshooting
 
@@ -192,10 +239,10 @@ python -c "import alembic; print(f'Alembic version: {alembic.__version__}')"
 - ✅ Virtual environment setup (US0.2-T1)
 - ✅ FastAPI project structure (US0.2-T2)
 - ✅ Core dependencies installation (US0.2-T3)
+- ✅ Basic FastAPI application setup (US0.2-T4)
 
 **Upcoming tasks:**
 
-- Basic FastAPI application setup (US0.2-T4)
 - Configuration management (US0.2-T5)
 - Logging setup (US0.2-T6)
 - Error handling (US0.2-T7)
