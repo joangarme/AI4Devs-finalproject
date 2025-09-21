@@ -41,7 +41,7 @@ Backend API for the Personal Finance Tracker application built with FastAPI.
    # Should show Python 3.11.x or higher
    ```
 
-4. **Install dependencies** (when available):
+4. **Install dependencies**:
 
    ```bash
    pip install -r requirements.txt
@@ -127,10 +127,37 @@ backend/
 │       │   └── __init__.py
 │       └── services/
 │           └── __init__.py
-├── requirements.txt     # Production dependencies (placeholder)
+├── requirements.txt     # Production dependencies
 ├── requirements-dev.txt # Development dependencies (to be created)
 ├── .gitignore          # Git ignore patterns
 └── README.md           # This file
+```
+
+### Dependencies
+
+The following core dependencies are installed and configured:
+
+- **FastAPI 0.104.1** - Modern, fast web framework for building APIs
+- **Uvicorn 0.24.0** - ASGI server for running FastAPI applications
+- **SQLAlchemy 2.0.23** - SQL toolkit and Object-Relational Mapping (ORM) library
+- **Alembic 1.12.1** - Database migration tool for SQLAlchemy
+- **Pydantic 2.11.9** - Data validation and settings management (included with FastAPI)
+
+All dependencies are pinned to specific versions in `requirements.txt` for reproducible builds.
+
+#### Verifying Installation
+
+After installing dependencies, you can verify the installation:
+
+```bash
+# Check installed packages
+pip list
+
+# Test imports
+python -c "import fastapi; print(f'FastAPI version: {fastapi.__version__}')"
+python -c "import uvicorn; print(f'Uvicorn version: {uvicorn.__version__}')"
+python -c "import sqlalchemy; print(f'SQLAlchemy version: {sqlalchemy.__version__}')"
+python -c "import alembic; print(f'Alembic version: {alembic.__version__}')"
 ```
 
 ### Development Workflow
@@ -162,12 +189,12 @@ backend/
 
 **Completed:**
 
-- ✅ Virtual environment setup
+- ✅ Virtual environment setup (US0.2-T1)
 - ✅ FastAPI project structure (US0.2-T2)
+- ✅ Core dependencies installation (US0.2-T3)
 
 **Upcoming tasks:**
 
-- Core dependencies installation (US0.2-T3)
 - Basic FastAPI application setup (US0.2-T4)
 - Configuration management (US0.2-T5)
 - Logging setup (US0.2-T6)
