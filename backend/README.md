@@ -47,7 +47,17 @@ Backend API for the Personal Finance Tracker application built with FastAPI.
    pip install -r requirements.txt
    ```
 
-5. **Run the development server**:
+5. **Configure environment variables** (optional):
+
+   ```bash
+   # Copy the example environment file
+   cp .env.example .env
+
+   # Edit .env file with your preferred settings
+   # The application will work with default values if .env is not present
+   ```
+
+6. **Run the development server**:
 
    ```bash
    uvicorn app.main:app --reload
@@ -111,7 +121,8 @@ backend/
 │   │   └── v1/          # API version 1
 │   │       └── __init__.py
 │   ├── core/            # Core functionality and utilities
-│   │   └── __init__.py
+│   │   ├── __init__.py
+│   │   └── config.py    # Configuration management
 │   ├── models/          # Database models and ORM
 │   │   └── __init__.py
 │   ├── schemas/         # Pydantic models for validation
@@ -122,12 +133,14 @@ backend/
 │   ├── __init__.py
 │   └── app/             # Mirrors app/ directory structure
 │       ├── __init__.py
+│       ├── test_main.py # Main application tests
 │       ├── api/
 │       │   ├── __init__.py
 │       │   └── v1/
 │       │       └── __init__.py
 │       ├── core/
-│       │   └── __init__.py
+│       │   ├── __init__.py
+│       │   └── test_config.py # Configuration tests
 │       ├── models/
 │       │   └── __init__.py
 │       ├── schemas/
@@ -135,7 +148,7 @@ backend/
 │       └── services/
 │           └── __init__.py
 ├── requirements.txt     # Production dependencies
-├── requirements-dev.txt # Development dependencies (to be created)
+├── .env.example        # Environment variables template
 ├── .gitignore          # Git ignore patterns
 └── README.md           # This file
 ```
@@ -149,6 +162,7 @@ The following core dependencies are installed and configured:
 - **SQLAlchemy 2.0.23** - SQL toolkit and Object-Relational Mapping (ORM) library
 - **Alembic 1.12.1** - Database migration tool for SQLAlchemy
 - **Pydantic 2.11.9** - Data validation and settings management (included with FastAPI)
+- **Pydantic-Settings 2.0.3** - Configuration management with environment variable support
 - **Pytest 7.4.3** - Testing framework for Python
 - **HTTPX 0.25.2** - HTTP client for testing FastAPI applications
 
@@ -167,8 +181,55 @@ python -c "import fastapi; print(f'FastAPI version: {fastapi.__version__}')"
 python -c "import uvicorn; print(f'Uvicorn version: {uvicorn.__version__}')"
 python -c "import sqlalchemy; print(f'SQLAlchemy version: {sqlalchemy.__version__}')"
 python -c "import alembic; print(f'Alembic version: {alembic.__version__}')"
+python -c "import pydantic_settings; print(f'Pydantic-Settings version: {pydantic_settings.__version__}')"
 python -c "import pytest; print(f'Pytest version: {pytest.__version__}')"
 python -c "import httpx; print(f'HTTPX version: {httpx.__version__}')"
+```
+
+### Configuration Management
+
+The application uses Pydantic Settings for configuration management, supporting:
+
+- **Environment variables** - Set via system environment or `.env` file
+- **Default values** - Sensible defaults for all settings
+- **Validation** - Type checking and constraint validation
+- **Case-insensitive** - Environment variable names are case-insensitive
+
+#### Available Settings
+
+| Setting          | Environment Variable     | Default                        | Description                                           |
+| ---------------- | ------------------------ | ------------------------------ | ----------------------------------------------------- |
+| App Name         | `APP_NAME`               | "Personal Finance Tracker API" | Application name                                      |
+| Debug Mode       | `DEBUG`                  | `false`                        | Enable debug mode                                     |
+| Log Level        | `LOG_LEVEL`              | `INFO`                         | Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL) |
+| API Prefix       | `API_V1_PREFIX`          | `/api/v1`                      | API version 1 prefix                                  |
+| Host             | `HOST`                   | `0.0.0.0`                      | Server host address                                   |
+| Port             | `PORT`                   | `8000`                         | Server port (1-65535)                                 |
+| CORS Origins     | `CORS_ORIGINS`           | `*`                            | Allowed CORS origins (comma-separated)                |
+| CORS Credentials | `CORS_ALLOW_CREDENTIALS` | `true`                         | Allow credentials in CORS                             |
+| CORS Methods     | `CORS_ALLOW_METHODS`     | `*`                            | Allowed HTTP methods (comma-separated)                |
+| CORS Headers     | `CORS_ALLOW_HEADERS`     | `*`                            | Allowed headers (comma-separated)                     |
+
+#### Configuration Examples
+
+**Development environment:**
+
+```bash
+# .env file
+DEBUG=true
+LOG_LEVEL=DEBUG
+PORT=8000
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+```
+
+**Production environment:**
+
+```bash
+# Environment variables
+DEBUG=false
+LOG_LEVEL=WARNING
+PORT=80
+CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 ```
 
 ### Development Workflow
@@ -193,8 +254,12 @@ python -m pytest -v
 # Run specific test file
 python -m pytest tests/app/test_main.py -v
 
-# Run tests with coverage (when coverage is configured)
-python -m pytest --cov=app
+# Run tests with coverage
+python -m pytest --cov=app --cov-report=term-missing
+
+# Run specific test files
+python -m pytest tests/app/core/test_config.py -v
+python -m pytest tests/app/test_main.py -v
 ```
 
 ### API Endpoints
@@ -211,7 +276,9 @@ The FastAPI application currently includes:
 {
   "status": "healthy",
   "message": "Personal Finance Tracker API is running",
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "debug": false,
+  "log_level": "INFO"
 }
 ```
 
@@ -240,10 +307,10 @@ The FastAPI application currently includes:
 - ✅ FastAPI project structure (US0.2-T2)
 - ✅ Core dependencies installation (US0.2-T3)
 - ✅ Basic FastAPI application setup (US0.2-T4)
+- ✅ Environment variables management (US0.2-T5)
 
 **Upcoming tasks:**
 
-- Configuration management (US0.2-T5)
 - Logging setup (US0.2-T6)
 - Error handling (US0.2-T7)
 - Development server configuration (US0.2-T8)
