@@ -28,9 +28,13 @@ class TestHealthEndpoint:
         assert "status" in data
         assert "message" in data
         assert "version" in data
+        assert "debug" in data
+        assert "log_level" in data
         assert data["status"] == "healthy"
         assert data["version"] == "0.1.0"
         assert "Personal Finance Tracker API is running" in data["message"]
+        assert isinstance(data["debug"], bool)
+        assert data["log_level"] in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
     
     def test_health_endpoint_response_content_type(self):
         """Test that the health endpoint returns JSON content type."""
@@ -43,9 +47,13 @@ class TestFastAPIApp:
     
     def test_app_has_correct_metadata(self):
         """Test that the FastAPI app has the correct metadata."""
-        assert app.title == "Personal Finance Tracker API"
+        from app.core.config import get_settings
+        settings = get_settings()
+        
+        assert app.title == settings.app_name
         assert app.version == "0.1.0"
         assert app.description == "Backend API for personal finance tracking and management"
+        assert app.debug == settings.debug
     
     def test_cors_middleware_configured(self):
         """Test that CORS middleware is properly configured."""
@@ -63,10 +71,13 @@ class TestFastAPIApp:
     
     def test_openapi_spec_contains_metadata(self):
         """Test that the OpenAPI spec contains the app metadata."""
+        from app.core.config import get_settings
+        settings = get_settings()
+        
         response = client.get("/openapi.json")
         openapi_spec = response.json()
         
-        assert openapi_spec["info"]["title"] == "Personal Finance Tracker API"
+        assert openapi_spec["info"]["title"] == settings.app_name
         assert openapi_spec["info"]["version"] == "0.1.0"
         assert openapi_spec["info"]["description"] == "Backend API for personal finance tracking and management"
     
