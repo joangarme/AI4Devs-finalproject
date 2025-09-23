@@ -129,24 +129,31 @@ backend/
 │   │   └── __init__.py
 │   └── services/        # Business logic services
 │       └── __init__.py
-├── tests/               # Test files (mirrors app structure)
+├── tests/               # Test files organized by type
 │   ├── __init__.py
-│   └── app/             # Mirrors app/ directory structure
+│   ├── conftest.py      # Shared test fixtures and configuration
+│   ├── unit/            # Fast, isolated unit tests
+│   │   ├── __init__.py
+│   │   └── app/
+│   │       ├── __init__.py
+│   │       ├── core/
+│   │       │   ├── __init__.py
+│   │       │   └── test_config.py # Configuration tests
+│   │       ├── models/
+│   │       │   └── __init__.py
+│   │       ├── schemas/
+│   │       │   └── __init__.py
+│   │       └── services/
+│   │           └── __init__.py
+│   └── integration/     # Tests with real components
 │       ├── __init__.py
-│       ├── test_main.py # Main application tests
-│       ├── api/
-│       │   ├── __init__.py
-│       │   └── v1/
-│       │       └── __init__.py
-│       ├── core/
-│       │   ├── __init__.py
-│       │   └── test_config.py # Configuration tests
-│       ├── models/
-│       │   └── __init__.py
-│       ├── schemas/
-│       │   └── __init__.py
-│       └── services/
-│           └── __init__.py
+│       └── app/
+│           ├── __init__.py
+│           ├── api/
+│           │   ├── __init__.py
+│           │   └── v1/
+│           │       └── __init__.py
+│           └── test_main.py # Main application tests
 ├── requirements.txt     # Production dependencies
 ├── .env.example        # Environment variables template
 ├── .gitignore          # Git ignore patterns
@@ -164,6 +171,7 @@ The following core dependencies are installed and configured:
 - **Pydantic 2.11.9** - Data validation and settings management (included with FastAPI)
 - **Pydantic-Settings 2.0.3** - Configuration management with environment variable support
 - **Pytest 7.4.3** - Testing framework for Python
+- **Pytest-Cov 4.1.0** - Coverage plugin for pytest
 - **HTTPX 0.25.2** - HTTP client for testing FastAPI applications
 
 All dependencies are pinned to specific versions in `requirements.txt` for reproducible builds.
@@ -242,7 +250,7 @@ CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 
 ### Running Tests
 
-The project includes comprehensive tests for the FastAPI application:
+The project includes comprehensive tests organized into unit and integration tests:
 
 ```bash
 # Run all tests
@@ -251,16 +259,29 @@ python -m pytest
 # Run tests with verbose output
 python -m pytest -v
 
-# Run specific test file
-python -m pytest tests/app/test_main.py -v
+# Run only unit tests (fast, isolated tests)
+python -m pytest -m unit
+
+# Run only integration tests (tests with real components)
+python -m pytest -m integration
 
 # Run tests with coverage
 python -m pytest --cov=app --cov-report=term-missing
 
 # Run specific test files
-python -m pytest tests/app/core/test_config.py -v
-python -m pytest tests/app/test_main.py -v
+python -m pytest tests/unit/app/core/test_config.py -v
+python -m pytest tests/integration/app/test_main.py -v
+
+# Run tests from a specific directory
+python -m pytest tests/unit/ -v
+python -m pytest tests/integration/ -v
 ```
+
+#### Test Organization
+
+- **Unit Tests** (`tests/unit/`): Fast, isolated tests that test individual components without external dependencies
+- **Integration Tests** (`tests/integration/`): Tests that verify multiple components working together, including API endpoints
+- **Shared Fixtures** (`tests/conftest.py`): Common test fixtures and configuration used across all tests
 
 ### API Endpoints
 
