@@ -203,6 +203,25 @@ The application uses Pydantic Settings for configuration management, supporting:
 - **Validation** - Type checking and constraint validation
 - **Case-insensitive** - Environment variable names are case-insensitive
 
+### Logging Configuration
+
+The application includes structured logging with environment-based configuration:
+
+- **Development mode** (`DEBUG=true`): Human-readable format with timestamps
+- **Production mode** (`DEBUG=false`): Structured JSON format for log aggregation
+- **Configurable log levels**: Set via `LOG_LEVEL` environment variable
+- **Logger instances**: Use `get_logger()` to create configured logger instances
+
+Example usage:
+
+```python
+from app.core.logging import get_logger
+
+logger = get_logger(__name__)
+logger.info("Application started")
+logger.error("An error occurred", extra={"user_id": 123})
+```
+
 #### Available Settings
 
 | Setting          | Environment Variable     | Default                        | Description                                           |
@@ -329,10 +348,10 @@ The FastAPI application currently includes:
 - ✅ Core dependencies installation (US0.2-T3)
 - ✅ Basic FastAPI application setup (US0.2-T4)
 - ✅ Environment variables management (US0.2-T5)
+- ✅ Logging setup (US0.2-T6) - Basic structured logging with environment-based configuration
 
 **Upcoming tasks:**
 
-- Logging setup (US0.2-T6)
 - Error handling (US0.2-T7)
 - Development server configuration (US0.2-T8)
 - Testing framework setup (US0.2-T9)
