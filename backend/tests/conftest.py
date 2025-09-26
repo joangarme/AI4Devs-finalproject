@@ -8,6 +8,7 @@ This provides only what's needed for:
 
 import pytest
 from typing import Generator
+from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -60,3 +61,23 @@ def temp_env_file(tmp_path):
     Returns a path to a temporary directory where .env files can be created.
     """
     return tmp_path
+
+
+# ============================================================
+# Fixtures for Error Handling Tests
+# ============================================================
+
+@pytest.fixture
+def mock_logger():
+    """
+    Mock logger for testing error logging behavior.
+    
+    Used by: test_main.py
+    - TestErrorHandling class for testing log levels and messages
+    
+    Returns a mock logger instance that can be used to assert
+    logging calls and inspect log messages.
+    """
+    # Mock the logger instance that's already created in main.py
+    with patch('app.main.logger') as mock_logger_instance:
+        yield mock_logger_instance

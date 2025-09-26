@@ -115,14 +115,16 @@ backend/
 ├── venv/                 # Virtual environment (not tracked in git)
 ├── app/                  # Main application code
 │   ├── __init__.py      # Main app package
-│   ├── main.py          # FastAPI application entry point
+│   ├── main.py          # FastAPI application entry point with global error handlers
 │   ├── api/             # API endpoints and routing
 │   │   ├── __init__.py
 │   │   └── v1/          # API version 1
 │   │       └── __init__.py
 │   ├── core/            # Core functionality and utilities
 │   │   ├── __init__.py
-│   │   └── config.py    # Configuration management
+│   │   ├── config.py    # Configuration management
+│   │   ├── exceptions.py # Custom exception classes
+│   │   └── logging.py   # Structured logging configuration
 │   ├── models/          # Database models and ORM
 │   │   └── __init__.py
 │   ├── schemas/         # Pydantic models for validation
@@ -138,7 +140,9 @@ backend/
 │   │       ├── __init__.py
 │   │       ├── core/
 │   │       │   ├── __init__.py
-│   │       │   └── test_config.py # Configuration tests
+│   │       │   ├── test_config.py     # Configuration tests
+│   │       │   ├── test_exceptions.py # Exception classes tests
+│   │       │   └── test_logging.py    # Logging tests
 │   │       ├── models/
 │   │       │   └── __init__.py
 │   │       ├── schemas/
@@ -153,7 +157,7 @@ backend/
 │           │   ├── __init__.py
 │           │   └── v1/
 │           │       └── __init__.py
-│           └── test_main.py # Main application tests
+│           └── test_main.py # Main application and error handling tests
 ├── requirements.txt     # Production dependencies
 ├── .env.example        # Environment variables template
 ├── .gitignore          # Git ignore patterns
@@ -220,6 +224,58 @@ from app.core.logging import get_logger
 logger = get_logger(__name__)
 logger.info("Application started")
 logger.error("An error occurred", extra={"user_id": 123})
+```
+
+### Error Handling
+
+The application includes a comprehensive global error handling system:
+
+- **Custom Exceptions**: Structured exception hierarchy with consistent HTTP status codes
+- **Global Exception Handlers**: Centralized error handling for all API endpoints
+- **Consistent Error Format**: All errors return JSON with `detail` and `status_code` fields
+- **Proper Logging**: Errors are logged with appropriate levels and request context
+- **Security**: Internal errors don't expose sensitive information to clients
+
+#### Available Exception Classes
+
+```python
+from app.core.exceptions import (
+    BaseAPIException,      # Base class (500 status)
+    ValidationException,   # Request validation errors (400 status)
+    NotFoundException,     # Resource not found (404 status)
+    UnauthorizedException  # Authentication failures (401 status)
+)
+
+# Usage example
+raise ValidationException("Invalid email format")
+raise NotFoundException("User not found")
+raise UnauthorizedException("Token expired")
+```
+
+#### Error Response Format
+
+All API errors return consistent JSON responses:
+
+```json
+{
+  "detail": "Error message describing what went wrong",
+  "status_code": 400
+}
+```
+
+For Pydantic validation errors (422 status), detailed field-level information is provided:
+
+```json
+{
+  "detail": [
+    {
+      "type": "string_type",
+      "loc": ["field_name"],
+      "msg": "Input should be a valid string",
+      "input": 123
+    }
+  ]
+}
 ```
 
 #### Available Settings
@@ -289,7 +345,11 @@ python -m pytest --cov=app --cov-report=term-missing
 
 # Run specific test files
 python -m pytest tests/unit/app/core/test_config.py -v
+python -m pytest tests/unit/app/core/test_exceptions.py -v
 python -m pytest tests/integration/app/test_main.py -v
+
+# Run error handling tests specifically
+python -m pytest tests/integration/app/test_main.py::TestErrorHandling -v
 
 # Run tests from a specific directory
 python -m pytest tests/unit/ -v
@@ -299,7 +359,11 @@ python -m pytest tests/integration/ -v
 #### Test Organization
 
 - **Unit Tests** (`tests/unit/`): Fast, isolated tests that test individual components without external dependencies
+  - `test_config.py` - Configuration management tests
+  - `test_exceptions.py` - Custom exception classes tests
+  - `test_logging.py` - Logging functionality tests
 - **Integration Tests** (`tests/integration/`): Tests that verify multiple components working together, including API endpoints
+  - `test_main.py` - FastAPI application tests including error handling
 - **Shared Fixtures** (`tests/conftest.py`): Common test fixtures and configuration used across all tests
 
 ### API Endpoints
@@ -348,11 +412,11 @@ The FastAPI application currently includes:
 - ✅ Core dependencies installation (US0.2-T3)
 - ✅ Basic FastAPI application setup (US0.2-T4)
 - ✅ Environment variables management (US0.2-T5)
-- ✅ Logging setup (US0.2-T6) - Basic structured logging with environment-based configuration
+- ✅ Logging setup (US0.2-T6) - Structured logging with environment-based configuration
+- ✅ Error handling (US0.2-T7) - Global exception handlers with consistent error responses
 
 **Upcoming tasks:**
 
-- Error handling (US0.2-T7)
 - Development server configuration (US0.2-T8)
 - Testing framework setup (US0.2-T9)
 
