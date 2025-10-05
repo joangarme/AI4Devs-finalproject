@@ -90,13 +90,22 @@ frontend/
 
 The following core dependencies are installed and configured:
 
-- **React 18.3.1** - Modern UI library with hooks and concurrent features
-- **TypeScript 5.5.3** - Type-safe JavaScript with static type checking
-- **Vite 7.1.8** - Fast build tool and development server
-- **@vitejs/plugin-react 4.3.3** - React plugin for Vite with Fast Refresh
-- **ESLint 9.15.0** - Code linting and quality enforcement
-- **@types/react 18.3.12** - TypeScript definitions for React
-- **@types/react-dom 18.3.1** - TypeScript definitions for React DOM
+#### Core Framework
+- **React 19.1.1** - Modern UI library with hooks and concurrent features
+- **TypeScript 5.9.3** - Type-safe JavaScript with static type checking
+- **Vite 7.1.7** - Fast build tool and development server
+- **@vitejs/plugin-react 5.0.4** - React plugin for Vite with Fast Refresh
+
+#### Essential Libraries (MVP)
+- **react-router-dom 6.30.1** - Client-side routing for single-page applications
+- **@tanstack/react-query 5.90.2** - Powerful data synchronization for React
+- **react-hook-form 7.64.0** - Performant, flexible forms with easy validation
+- **axios 1.12.2** - Promise-based HTTP client for API calls
+
+#### Development Tools
+- **ESLint 9.36.0** - Code linting and quality enforcement
+- **@types/react 19.1.16** - TypeScript definitions for React
+- **@types/react-dom 19.1.9** - TypeScript definitions for React DOM
 
 All dependencies are pinned to specific versions in `package.json` for reproducible builds.
 
@@ -245,14 +254,15 @@ Creates optimized production build in `dist/` directory with:
 
 - ✅ React + TypeScript + Vite setup (US0.3-T1)
 - ✅ Organized project structure (US0.3-T2)
+- ✅ Essential dependencies installed (US0.3-T3)
 - ✅ Component architecture with clean imports
 - ✅ Development environment configuration
 
 **Upcoming tasks:**
 
-- Component library setup (US0.3-T3)
-- State management configuration (US0.3-T4)
-- API integration setup (US0.3-T5)
-- Testing framework setup (US0.3-T6)
+- Component library setup (US0.3-T4)
+- State management configuration (US0.3-T5)
+- API integration setup (US0.3-T6)
+- Testing framework setup (US0.3-T7)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.3-frontend-development-environment-setup-tasks.md`
