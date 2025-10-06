@@ -93,24 +93,28 @@ frontend/
 The following core dependencies are installed and configured:
 
 #### Core Framework
+
 - **React 19.1.1** - Modern UI library with hooks and concurrent features
 - **TypeScript 5.9.3** - Type-safe JavaScript with static type checking
 - **Vite 7.1.7** - Fast build tool and development server
 - **@vitejs/plugin-react 5.0.4** - React plugin for Vite with Fast Refresh
 
 #### Essential Libraries (MVP)
+
 - **react-router-dom 6.30.1** - Client-side routing for single-page applications
 - **@tanstack/react-query 5.90.2** - Powerful data synchronization for React
 - **react-hook-form 7.64.0** - Performant, flexible forms with easy validation
 - **axios 1.12.2** - Promise-based HTTP client for API calls
 
 #### Styling
+
 - **tailwindcss 3.4.17** - Utility-first CSS framework for rapid UI development
 - **postcss 8.4.49** - CSS post-processor for Tailwind CSS
 - **autoprefixer 10.4.20** - Automatic vendor prefixing for CSS
 - **@tailwindcss/postcss 0.0.1** - PostCSS plugin for Tailwind CSS
 
 #### Development Tools
+
 - **ESLint 9.36.0** - Code linting and quality enforcement
 - **@types/react 19.1.16** - TypeScript definitions for React
 - **@types/react-dom 19.1.9** - TypeScript definitions for React DOM
