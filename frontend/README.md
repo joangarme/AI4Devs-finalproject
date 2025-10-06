@@ -148,6 +148,8 @@ npm run preview      # Preview production build locally
 # Code Quality
 npm run lint         # Run ESLint
 npm run lint:fix     # Fix ESLint issues automatically
+npm run format       # Format code with Prettier
+npm run format:check # Check if code is formatted correctly
 
 # Type Checking
 npx tsc --noEmit     # Check TypeScript types without emitting files
@@ -157,7 +159,7 @@ npx tsc --noEmit     # Check TypeScript types without emitting files
 
 1. Always run `npm install` after pulling changes
 2. Use `npm run dev` for development with hot reloading
-3. Run `npm run lint` before committing changes
+3. Run `npm run lint` and `npm run format:check` before committing changes
 4. Use `npm run build` to test production builds
 5. Follow the established project structure for new components
 
@@ -212,6 +214,14 @@ The application uses modern tooling with optimized configurations:
 - **React-specific** rules for hooks and components
 - **Import organization** and unused variable detection
 - **Code quality** enforcement with consistent formatting
+- **Prettier integration** to avoid formatting conflicts
+
+#### Prettier Configuration
+
+- **Code formatting** with consistent style across the project
+- **Tailwind CSS class sorting** for organized utility classes
+- **Editor integration** with format-on-save support
+- **Team consistency** with shared formatting rules
 
 #### Tailwind CSS Configuration
 
@@ -275,12 +285,12 @@ Creates optimized production build in `dist/` directory with:
 - ✅ Organized project structure (US0.3-T2)
 - ✅ Essential dependencies installed (US0.3-T3)
 - ✅ Tailwind CSS configured for styling (US0.3-T4)
+- ✅ ESLint and Prettier configuration (US0.3-T5)
 - ✅ Component architecture with clean imports
 - ✅ Development environment configuration
 
 **Upcoming tasks:**
 
-- ESLint and Prettier configuration (US0.3-T5)
 - Basic routing structure (US0.3-T6)
 - Environment variables setup (US0.3-T7)
 - Base component library (US0.3-T8)
