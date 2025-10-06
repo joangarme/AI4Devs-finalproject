@@ -1,6 +1,14 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { Home, Login, Register, Dashboard, Transactions, Settings, NotFound } from '../pages';
+import {
+  Home,
+  Login,
+  Register,
+  Dashboard,
+  Transactions,
+  Settings,
+  NotFound,
+} from '../pages';
 
 const AppRoutes: React.FC = () => {
   return (
