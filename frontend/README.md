@@ -105,6 +105,48 @@ The following core dependencies are installed and configured:
 - **react-hook-form 7.64.0** - Performant, flexible forms with easy validation
 - **axios 1.12.2** - Promise-based HTTP client for API calls
 
+### Routing Structure
+
+The application uses React Router DOM for client-side routing with the following setup:
+
+#### Route Configuration
+
+- **`/`** - Home/Landing page
+- **`/login`** - User login page
+- **`/register`** - User registration page
+- **`/dashboard`** - Main dashboard (authenticated users)
+- **`/transactions`** - Transaction management
+- **`/settings`** - User settings and preferences
+- **`*`** - 404 Not Found page for unknown routes
+
+#### Navigation Component
+
+A responsive navigation component is included for testing routes:
+
+- Active route highlighting
+- Mobile-friendly design
+- Clean navigation structure
+- TypeScript support
+
+#### Router Setup
+
+The routing is configured in:
+
+- **`main.tsx`** - BrowserRouter wrapper around the entire app
+- **`components/AppRoutes.tsx`** - Route definitions and component mapping
+- **`components/Navigation.tsx`** - Navigation component for route testing
+- **`pages/`** - Individual page components for each route
+
+#### Testing Routes
+
+To test the routing functionality:
+
+1. Start the development server: `npm run dev`
+2. Navigate to `http://localhost:5173`
+3. Use the navigation bar to test each route
+4. Verify 404 page by visiting unknown URLs
+5. Test browser back/forward buttons
+
 #### Styling
 
 - **tailwindcss 3.4.17** - Utility-first CSS framework for rapid UI development
@@ -286,12 +328,12 @@ Creates optimized production build in `dist/` directory with:
 - ✅ Essential dependencies installed (US0.3-T3)
 - ✅ Tailwind CSS configured for styling (US0.3-T4)
 - ✅ ESLint and Prettier configuration (US0.3-T5)
+- ✅ Basic routing structure with React Router (US0.3-T6)
 - ✅ Component architecture with clean imports
 - ✅ Development environment configuration
 
 **Upcoming tasks:**
 
-- Basic routing structure (US0.3-T6)
 - Environment variables setup (US0.3-T7)
 - Base component library (US0.3-T8)
 - Development scripts and documentation (US0.3-T9)
