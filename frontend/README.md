@@ -39,7 +39,6 @@ Frontend application for the Personal Finance Tracker built with React, TypeScri
    ```
 
    The application will start on `http://localhost:5173` with:
-
    - Hot Module Replacement (HMR) for instant updates
    - TypeScript compilation
    - ESLint integration
@@ -182,11 +181,11 @@ Each directory includes an `index.ts` file for clean imports:
 
 ```typescript
 // Clean imports from organized structure
-import { Button } from "@/components/common";
-import { UserProfile } from "@/components/features";
-import { useAuth } from "@/hooks";
-import { apiClient } from "@/services";
-import type { User } from "@/types";
+import { Button } from '@/components/common';
+import { UserProfile } from '@/components/features';
+import { useAuth } from '@/hooks';
+import { apiClient } from '@/services';
+import type { User } from '@/types';
 ```
 
 ### Configuration Management
