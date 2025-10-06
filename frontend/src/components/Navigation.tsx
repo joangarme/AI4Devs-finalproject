@@ -23,7 +23,7 @@ const Navigation: React.FC = () => {
                 LiDR
               </Link>
             </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+            <div className="ml-6 flex space-x-8">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
