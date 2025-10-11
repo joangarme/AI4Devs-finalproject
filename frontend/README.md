@@ -273,6 +273,107 @@ The application uses modern tooling with optimized configurations:
 - **Default configuration** optimized for React components
 - **Responsive design** utilities for mobile-first development
 
+### Environment Variables
+
+The application uses Vite's built-in environment variable handling for configuration management.
+
+#### Setup
+
+1. **Copy the example file**:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. **Edit `.env.local`** with your configuration:
+
+   ```bash
+   # .env.local is ignored by git (*.local in .gitignore)
+   # Modify values as needed for your local environment
+   ```
+
+#### Available Variables
+
+All environment variables must be prefixed with `VITE_` to be exposed to the client:
+
+| Variable            | Description          | Default                    |
+| ------------------- | -------------------- | -------------------------- |
+| `VITE_API_BASE_URL` | Backend API base URL | `http://localhost:8000`    |
+| `VITE_API_VERSION`  | API version prefix   | `v1`                       |
+| `VITE_NODE_ENV`     | Environment mode     | `development`              |
+| `VITE_APP_NAME`     | Application name     | `Personal Finance Manager` |
+| `VITE_APP_VERSION`  | Application version  | `1.0.0`                    |
+| `VITE_ENABLE_DEBUG` | Enable debug mode    | `false`                    |
+
+#### Usage in Code
+
+The application provides a type-safe utility for accessing environment variables:
+
+```typescript
+import { env, getApiUrl, isDevelopment } from '@/utils';
+
+// Access environment variables with TypeScript autocomplete
+const apiBaseUrl = env.apiBaseUrl;
+const isDebug = env.enableDebug;
+
+// Build full API URLs
+const endpoint = getApiUrl('users'); // http://localhost:8000/api/v1/users
+
+// Check environment
+if (isDevelopment()) {
+  console.log('Running in development mode');
+}
+```
+
+#### TypeScript Support
+
+Environment variables are fully typed in `src/env.d.ts`:
+
+```typescript
+interface ImportMetaEnv {
+  readonly VITE_API_BASE_URL: string;
+  readonly VITE_API_VERSION: string;
+  readonly VITE_NODE_ENV: 'development' | 'production' | 'test';
+  readonly VITE_APP_NAME: string;
+  readonly VITE_APP_VERSION: string;
+  readonly VITE_ENABLE_DEBUG: string;
+}
+```
+
+This enables:
+
+- **IntelliSense** in your editor
+- **Type checking** at compile time
+- **Auto-completion** for environment variable names
+
+#### Environment Precedence
+
+Vite loads environment variables in the following order (later overrides earlier):
+
+1. `.env` - Shared defaults (tracked in git, no secrets)
+2. `.env.local` - Local overrides (ignored by git)
+3. `.env.[mode]` - Mode-specific (e.g., `.env.production`)
+4. `.env.[mode].local` - Mode-specific local overrides
+
+#### Security Notes
+
+- **Never commit** `.env.local` or files with secrets
+- **Only add** non-sensitive defaults to `.env.example`
+- **Always prefix** client-exposed variables with `VITE_`
+- **Backend secrets** should NEVER be in frontend env files
+
+#### Verification
+
+Test environment variables are loaded correctly:
+
+```bash
+# Build should succeed with env vars
+npm run build
+
+# Check TypeScript recognizes env types
+npx tsc --noEmit
+```
+
 ### API Integration
 
 The frontend is designed to integrate with the backend API:
@@ -329,12 +430,12 @@ Creates optimized production build in `dist/` directory with:
 - ✅ Tailwind CSS configured for styling (US0.3-T4)
 - ✅ ESLint and Prettier configuration (US0.3-T5)
 - ✅ Basic routing structure with React Router (US0.3-T6)
+- ✅ Environment variables setup (US0.3-T7)
 - ✅ Component architecture with clean imports
 - ✅ Development environment configuration
 
 **Upcoming tasks:**
 
-- Environment variables setup (US0.3-T7)
 - Base component library (US0.3-T8)
 - Development scripts and documentation (US0.3-T9)
 
