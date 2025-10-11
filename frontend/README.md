@@ -374,6 +374,114 @@ npm run build
 npx tsc --noEmit
 ```
 
+### Component Library
+
+The application includes a base component library following React best practices with TypeScript and Tailwind CSS.
+
+#### Button Component
+
+The `Button` component is a flexible, reusable button with multiple variants and features:
+
+**Features:**
+
+- **5 Variants**: `primary`, `secondary`, `outline`, `ghost`, `danger`
+- **3 Sizes**: `sm`, `md`, `lg`
+- **Loading State**: Built-in spinner with automatic disabling
+- **Icons Support**: `leftIcon` and `rightIcon` props for icons
+- **Full Width**: Optional `fullWidth` prop for responsive layouts
+- **Accessibility**: Proper ARIA attributes and keyboard navigation
+- **TypeScript**: Fully typed with intellisense support
+- **Extends HTML Button**: Inherits all native button attributes
+
+**Usage Examples:**
+
+```typescript
+import { Button } from '@/components';
+
+// Basic usage
+<Button variant="primary" size="md">
+  Click Me
+</Button>
+
+// With loading state
+<Button variant="primary" isLoading>
+  Saving...
+</Button>
+
+// With icons
+<Button
+  variant="secondary"
+  leftIcon={<PlusIcon />}
+  onClick={handleAdd}
+>
+  Add Item
+</Button>
+
+// Full width (responsive)
+<Button fullWidth>
+  Submit Form
+</Button>
+
+// All native button props work
+<Button
+  type="submit"
+  disabled={!isValid}
+  onClick={handleSubmit}
+>
+  Submit
+</Button>
+```
+
+**Component Structure:**
+
+```
+components/common/Button/
+├── Button.tsx           # Component implementation
+├── Button.types.ts      # TypeScript interfaces
+└── index.ts             # Exports
+```
+
+**Available Props:**
+
+| Prop         | Type                              | Default     | Description                             |
+| ------------ | --------------------------------- | ----------- | --------------------------------------- |
+| `variant`    | ButtonVariant                     | `'primary'` | Visual style variant                    |
+| `size`       | ButtonSize                        | `'md'`      | Button size                             |
+| `fullWidth`  | boolean                           | `false`     | Take full width of container            |
+| `isLoading`  | boolean                           | `false`     | Show loading spinner                    |
+| `leftIcon`   | ReactNode                         | -           | Icon before text                        |
+| `rightIcon`  | ReactNode                         | -           | Icon after text                         |
+| `children`   | ReactNode                         | required    | Button content                          |
+| `...rest`    | ButtonHTMLAttributes              | -           | All native button attributes            |
+
+**Testing the Component:**
+
+Visit the home page (`/`) to see a comprehensive showcase of all Button variants, sizes, and states.
+
+#### Component Best Practices
+
+The Button component demonstrates best practices for creating reusable components:
+
+1. **TypeScript First**: Proper typing with interfaces and type exports
+2. **Composition**: Using `forwardRef` for ref forwarding
+3. **Accessibility**: Semantic HTML with proper ARIA attributes
+4. **Flexibility**: Extensible through props and native attributes
+5. **Documentation**: JSDoc comments for IntelliSense
+6. **Styling**: Tailwind CSS with variant-based styling
+7. **Testing**: Visual showcase on home page
+
+#### Adding New Components
+
+To add new components to the library:
+
+1. Create a new directory in `components/common/`
+2. Add three files:
+   - `ComponentName.tsx` - Component implementation
+   - `ComponentName.types.ts` - TypeScript interfaces
+   - `index.ts` - Exports
+3. Export from `components/common/index.ts`
+4. Component is automatically available through `components/index.ts`
+
 ### API Integration
 
 The frontend is designed to integrate with the backend API:
@@ -431,12 +539,12 @@ Creates optimized production build in `dist/` directory with:
 - ✅ ESLint and Prettier configuration (US0.3-T5)
 - ✅ Basic routing structure with React Router (US0.3-T6)
 - ✅ Environment variables setup (US0.3-T7)
+- ✅ Base component library structure with Button component (US0.3-T8)
 - ✅ Component architecture with clean imports
 - ✅ Development environment configuration
 
 **Upcoming tasks:**
 
-- Base component library (US0.3-T8)
 - Development scripts and documentation (US0.3-T9)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.3-frontend-development-environment-setup-tasks.md`
