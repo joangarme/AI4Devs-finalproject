@@ -1,2 +1,3 @@
-// Common reusable components will be exported from here
-// Example: export { Button } from './Button';
+// Common reusable components
+export { Button } from './Button';
+export type { ButtonProps, ButtonVariant, ButtonSize } from './Button';
