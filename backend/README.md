@@ -180,6 +180,102 @@ The following core dependencies are installed and configured:
 
 All dependencies are pinned to specific versions in `requirements.txt` for reproducible builds.
 
+### Database Migrations with Alembic
+
+The project uses Alembic for database schema migrations with SQLite.
+
+#### Migration Directory Structure
+
+```
+backend/
+├── alembic/              # Alembic migration directory
+│   ├── versions/         # Migration scripts
+│   ├── env.py           # Migration environment configuration
+│   ├── script.py.mako   # Migration script template
+│   └── README           # Alembic documentation
+├── alembic.ini          # Alembic configuration file
+└── app.db               # SQLite database file (created on first migration)
+```
+
+#### Alembic Configuration
+
+- **Database URL**: `sqlite:///./app.db` (relative path in backend directory)
+- **Metadata Import**: Configured to import `Base` from `app.core.database` for autogenerate support
+- **Migration Tracking**: Uses `alembic_version` table in the database
+
+#### Basic Alembic Commands
+
+**Check current migration version:**
+
+```bash
+alembic current
+```
+
+**View migration history:**
+
+```bash
+alembic history --verbose
+```
+
+**Create a new migration:**
+
+```bash
+# Manual migration
+alembic revision -m "description of changes"
+
+# Auto-generate migration from model changes
+alembic revision --autogenerate -m "description of changes"
+```
+
+**Apply migrations:**
+
+```bash
+# Upgrade to latest version
+alembic upgrade head
+
+# Upgrade by one version
+alembic upgrade +1
+
+# Upgrade to specific version
+alembic upgrade <revision_id>
+```
+
+**Rollback migrations:**
+
+```bash
+# Downgrade by one version
+alembic downgrade -1
+
+# Downgrade to specific version
+alembic downgrade <revision_id>
+
+# Rollback all migrations
+alembic downgrade base
+```
+
+#### Migration Best Practices
+
+1. **Always review auto-generated migrations** before applying them
+2. **Test migrations in development** before applying to production
+3. **Include both upgrade() and downgrade()** functions in all migrations
+4. **Never modify applied migrations** - create a new migration instead
+5. **Backup database** before running migrations in production
+
+#### Verifying Alembic Installation
+
+After installing dependencies, you can verify Alembic is configured correctly:
+
+```bash
+# Check Alembic version
+alembic --version
+
+# Verify configuration (should not error)
+alembic current
+
+# List migration directory
+ls -la alembic/versions/
+```
+
 #### Verifying Installation
 
 After installing dependencies, you can verify the installation:
