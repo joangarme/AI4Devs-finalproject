@@ -1,5 +1,8 @@
 # US0.4: Database Setup and Migration System - Task Breakdown
 
+**Epic**: [AI4DFP-1 - Development Environment & Project Scaffolding](https://joangarme.atlassian.net/browse/AI4DFP-1)
+**Jira Story**: [AI4DFP-32](https://joangarme.atlassian.net/browse/AI4DFP-32)
+
 ## User Story
 
 **As a** developer,  
@@ -21,6 +24,7 @@
 
 ### Task ID: US0.4-T1
 
+**Jira**: [AI4DFP-33](https://joangarme.atlassian.net/browse/AI4DFP-33)  
 **Type**: [DevOps]  
 **Title**: Install and configure Alembic for database migrations  
 **Story Points**: 0.5  
@@ -54,12 +58,13 @@
 - Use relative path for SQLite database file (e.g., `sqlite:///./app.db`)
 - Configure env.py to import models' Base for autogenerate support
 - Set `sqlalchemy.url` in alembic.ini to use environment variable
-- Add alembic/ directory to git, but exclude *.pyc files
+- Add alembic/ directory to git, but exclude \*.pyc files
 
 ---
 
 ### Task ID: US0.4-T2
 
+**Jira**: [AI4DFP-34](https://joangarme.atlassian.net/browse/AI4DFP-34)  
 **Type**: [Backend]  
 **Title**: Create database configuration module  
 **Story Points**: 1  
@@ -109,6 +114,7 @@
 
 ### Task ID: US0.4-T3
 
+**Jira**: [AI4DFP-35](https://joangarme.atlassian.net/browse/AI4DFP-35)  
 **Type**: [Database]  
 **Title**: Create initial database migration  
 **Story Points**: 0.5  
@@ -148,6 +154,7 @@
 
 ### Task ID: US0.4-T4
 
+**Jira**: [AI4DFP-36](https://joangarme.atlassian.net/browse/AI4DFP-36)  
 **Type**: [Backend]  
 **Title**: Implement database dependency injection  
 **Story Points**: 0.5  
@@ -195,6 +202,7 @@ def get_db():
 
 ### Task ID: US0.4-T5
 
+**Jira**: [AI4DFP-37](https://joangarme.atlassian.net/browse/AI4DFP-37)  
 **Type**: [Backend]  
 **Title**: Create database health check endpoint  
 **Story Points**: 1  
@@ -242,6 +250,7 @@ async def health_check_db(db: Session = Depends(get_db)):
 
 ### Task ID: US0.4-T6
 
+**Jira**: [AI4DFP-38](https://joangarme.atlassian.net/browse/AI4DFP-38)  
 **Type**: [Backend]  
 **Title**: Implement database initialization script  
 **Story Points**: 0.5  
@@ -288,6 +297,7 @@ async def health_check_db(db: Session = Depends(get_db)):
 
 ### Task ID: US0.4-T7
 
+**Jira**: [AI4DFP-39](https://joangarme.atlassian.net/browse/AI4DFP-39)  
 **Type**: [DevOps]  
 **Title**: Create database management scripts and commands  
 **Story Points**: 0.5  
@@ -335,6 +345,7 @@ db-reset: # Drop and recreate
 
 ### Task ID: US0.4-T8
 
+**Jira**: [AI4DFP-40](https://joangarme.atlassian.net/browse/AI4DFP-40)  
 **Type**: [Documentation]  
 **Title**: Document database backup and recovery strategy  
 **Story Points**: 0.5  
@@ -377,6 +388,7 @@ db-reset: # Drop and recreate
 
 ### Task ID: US0.4-T9
 
+**Jira**: [AI4DFP-41](https://joangarme.atlassian.net/browse/AI4DFP-41)  
 **Type**: [Backend]  
 **Title**: Add database configuration to environment variables  
 **Story Points**: 0.5  
@@ -427,7 +439,7 @@ DB_ECHO: bool = False  # SQLAlchemy echo
 **Sequence**: Tasks build incrementally:
 
 1. Alembic setup (T1) → 2. DB config (T2) → 3. Initial migration (T3) / Dependency injection (T4) → 5. Health endpoint (T5) / Init script (T6) → 7. Management scripts (T7) → 8. Backup docs (T8)
-9. Environment config (T9) can be done parallel with T2
+2. Environment config (T9) can be done parallel with T2
 
 **Key Outcomes**:
 
@@ -439,4 +451,3 @@ DB_ECHO: bool = False  # SQLAlchemy echo
 - Foundation ready for creating actual data models
 
 **Next Steps**: After completing these tasks, the database infrastructure will be ready for implementing actual data models for user management (Epic 1) and transactions (Epic 2).
-
