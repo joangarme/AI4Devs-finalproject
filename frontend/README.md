@@ -511,22 +511,283 @@ Creates optimized production build in `dist/` directory with:
 - **Development**: Fast HMR, detailed error messages, source maps
 - **Production**: Optimized bundles, minified code, performance optimizations
 
+### VS Code Recommended Extensions
+
+This project includes a `.vscode/extensions.json` file that will prompt you to install recommended extensions when you open the project in VS Code.
+
+#### Essential Extensions
+
+1. **ESLint** (`dbaeumer.vscode-eslint`)
+   - Real-time linting and error detection
+   - Automatic fixing on save
+   - Installation: VS Code will prompt you, or install from Extensions panel
+
+2. **Prettier** (`esbenp.prettier-vscode`)
+   - Code formatting on save
+   - Consistent code style across team
+   - Works seamlessly with ESLint
+
+3. **Tailwind CSS IntelliSense** (`bradlc.vscode-tailwindcss`)
+   - Autocomplete for Tailwind classes
+   - Syntax highlighting for class names
+   - CSS preview on hover
+
+4. **Jest Runner** (`firsttris.vscode-jest-runner`)
+   - Run individual tests from the editor
+   - Quick test debugging
+   - Useful when tests are added
+
+5. **Jest** (`orta.vscode-jest`)
+   - Inline test results
+   - Automatic test running
+   - Test coverage visualization
+
+#### VS Code Settings
+
+Create or update `.vscode/settings.json` in your workspace with:
+
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "tailwindCSS.experimental.classRegex": [
+    ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ]
+}
+```
+
 ### Troubleshooting
 
-**Node.js version issues:**
+#### Node.js Version Issues
 
-- Ensure Node.js 20.19+ or 22.12+ is installed
-- Use `nvm` to manage Node.js versions: `nvm use 20`
+**Problem:** Errors during `npm install` or `npm run dev` related to Node.js version
 
-**Build failures:**
+**Symptoms:**
 
-- Clear node_modules and reinstall: `rm -rf node_modules package-lock.json && npm install`
-- Check TypeScript errors: `npx tsc --noEmit`
+- "Node.js version not supported"
+- "Unsupported engine" errors
+- Build failures with version warnings
 
-**Import path issues:**
+**Solution:**
 
-- Verify `tsconfig.json` path mapping configuration
-- Check that `index.ts` files exist in each directory
+1. Check your current Node.js version:
+
+   ```bash
+   node --version
+   ```
+
+2. Install/use Node.js 20.19+ or 22.12+:
+
+   ```bash
+   # Install nvm if not already installed
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+   # Install and use Node.js 20
+   nvm install 20
+   nvm use 20
+   nvm alias default 20
+   ```
+
+3. Reinstall dependencies:
+   ```bash
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+#### Build Failures
+
+**Problem:** `npm run build` fails with errors
+
+**Common Causes & Solutions:**
+
+1. **TypeScript errors:**
+
+   ```bash
+   # Check for type errors
+   npm run type-check
+
+   # Fix common issues:
+   # - Missing imports
+   # - Incorrect prop types
+   # - Unused variables
+   ```
+
+2. **Dependency conflicts:**
+
+   ```bash
+   # Clear cache and reinstall
+   rm -rf node_modules package-lock.json
+   npm cache clean --force
+   npm install
+   ```
+
+3. **Out of memory:**
+   ```bash
+   # Increase Node memory limit
+   export NODE_OPTIONS="--max-old-space-size=4096"
+   npm run build
+   ```
+
+#### Import Path Issues
+
+**Problem:** Module not found errors or incorrect imports
+
+**Solutions:**
+
+1. **Verify path aliases in `tsconfig.json`:**
+
+   ```json
+   {
+     "compilerOptions": {
+       "paths": {
+         "@/*": ["./src/*"]
+       }
+     }
+   }
+   ```
+
+2. **Check index.ts files exist:**
+
+   ```bash
+   # Each directory should have an index.ts
+   ls src/components/index.ts
+   ls src/hooks/index.ts
+   ls src/utils/index.ts
+   ```
+
+3. **Restart TypeScript server in VS Code:**
+   - Press `Cmd+Shift+P` (Mac) or `Ctrl+Shift+P` (Windows)
+   - Type "TypeScript: Restart TS Server"
+   - Press Enter
+
+#### ESLint/Prettier Conflicts
+
+**Problem:** Code formatting keeps changing back and forth
+
+**Solution:**
+
+1. Ensure both ESLint and Prettier extensions are installed
+2. Check that `eslint-config-prettier` is in devDependencies
+3. Verify ESLint config includes Prettier:
+   ```bash
+   # Should be in package.json
+   "eslint-config-prettier": "^10.1.8"
+   ```
+4. Restart VS Code
+
+#### Hot Module Replacement (HMR) Not Working
+
+**Problem:** Changes don't reflect automatically during development
+
+**Solutions:**
+
+1. **Check dev server is running:**
+
+   ```bash
+   npm run dev
+   ```
+
+2. **Clear browser cache:**
+   - Hard refresh: `Cmd+Shift+R` (Mac) or `Ctrl+Shift+R` (Windows)
+
+3. **Restart dev server:**
+
+   ```bash
+   # Stop server (Ctrl+C) and restart
+   npm run dev
+   ```
+
+4. **Check for console errors:**
+   - Open browser DevTools (F12)
+   - Look for errors in Console tab
+
+#### Port Already in Use
+
+**Problem:** "Port 5173 is already in use"
+
+**Solution:**
+
+1. **Find and kill the process:**
+
+   ```bash
+   # macOS/Linux
+   lsof -ti:5173 | xargs kill -9
+
+   # Windows
+   netstat -ano | findstr :5173
+   taskkill /PID <PID> /F
+   ```
+
+2. **Use a different port:**
+   ```bash
+   # Vite will automatically use next available port
+   # Or specify port manually:
+   npm run dev -- --port 5174
+   ```
+
+#### Environment Variables Not Loading
+
+**Problem:** `import.meta.env.VITE_*` is undefined
+
+**Solutions:**
+
+1. **Verify file naming:**
+   - File must be named `.env` or `.env.local`
+   - Must be in `frontend/` directory (not root)
+
+2. **Check variable prefix:**
+   - All variables must start with `VITE_`
+   - Example: `VITE_API_BASE_URL=http://localhost:8000`
+
+3. **Restart dev server:**
+   - Environment variables are loaded at startup
+   - Changes require server restart
+
+4. **Verify TypeScript types:**
+   - Check `src/env.d.ts` includes your variables
+
+#### Slow Build Times
+
+**Problem:** `npm run build` takes too long
+
+**Solutions:**
+
+1. **Clear dist folder:**
+
+   ```bash
+   rm -rf dist
+   npm run build
+   ```
+
+2. **Update dependencies:**
+
+   ```bash
+   npm update
+   ```
+
+3. **Check for large dependencies:**
+   ```bash
+   npx vite-bundle-visualizer
+   ```
+
+#### Additional Help
+
+If you encounter issues not covered here:
+
+1. **Check the browser console** for runtime errors
+2. **Check the terminal** for build-time errors
+3. **Review Vite documentation**: https://vite.dev/
+4. **Review React documentation**: https://react.dev/
+5. **Search GitHub issues** in the project repository
 
 ### Next Steps
 
