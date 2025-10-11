@@ -443,16 +443,16 @@ components/common/Button/
 
 **Available Props:**
 
-| Prop         | Type                              | Default     | Description                             |
-| ------------ | --------------------------------- | ----------- | --------------------------------------- |
-| `variant`    | ButtonVariant                     | `'primary'` | Visual style variant                    |
-| `size`       | ButtonSize                        | `'md'`      | Button size                             |
-| `fullWidth`  | boolean                           | `false`     | Take full width of container            |
-| `isLoading`  | boolean                           | `false`     | Show loading spinner                    |
-| `leftIcon`   | ReactNode                         | -           | Icon before text                        |
-| `rightIcon`  | ReactNode                         | -           | Icon after text                         |
-| `children`   | ReactNode                         | required    | Button content                          |
-| `...rest`    | ButtonHTMLAttributes              | -           | All native button attributes            |
+| Prop        | Type                 | Default     | Description                  |
+| ----------- | -------------------- | ----------- | ---------------------------- |
+| `variant`   | ButtonVariant        | `'primary'` | Visual style variant         |
+| `size`      | ButtonSize           | `'md'`      | Button size                  |
+| `fullWidth` | boolean              | `false`     | Take full width of container |
+| `isLoading` | boolean              | `false`     | Show loading spinner         |
+| `leftIcon`  | ReactNode            | -           | Icon before text             |
+| `rightIcon` | ReactNode            | -           | Icon after text              |
+| `children`  | ReactNode            | required    | Button content               |
+| `...rest`   | ButtonHTMLAttributes | -           | All native button attributes |
 
 **Testing the Component:**
 

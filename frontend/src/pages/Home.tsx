@@ -115,10 +115,7 @@ const Home: React.FC = () => {
             <h3 className="mb-4 text-lg font-semibold text-gray-700">
               Interactive
             </h3>
-            <Button
-              variant="primary"
-              onClick={() => alert('Button clicked!')}
-            >
+            <Button variant="primary" onClick={() => alert('Button clicked!')}>
               Click Me
             </Button>
           </div>
