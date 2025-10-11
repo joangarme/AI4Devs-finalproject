@@ -275,6 +275,28 @@ backend/
 - **Metadata Import**: Configured to import `Base` from `app.core.database` for autogenerate support
 - **Migration Tracking**: Uses `alembic_version` table in the database
 
+#### Initial Migration
+
+The initial migration has been created to establish the migration baseline:
+
+- **Migration File**: `alembic/versions/1f08170cdfb3_initial_migration.py`
+- **Purpose**: Establishes the Alembic version tracking system
+- **Status**: Empty migration (no schema changes yet) - ready for future model additions
+- **Alembic Version Table**: Created in database to track migration state
+
+To apply the initial migration (if not already applied):
+
+```bash
+alembic upgrade head
+```
+
+To verify the current migration status:
+
+```bash
+alembic current
+# Output: 1f08170cdfb3 (head)
+```
+
 #### Basic Alembic Commands
 
 **Check current migration version:**
@@ -587,10 +609,11 @@ The FastAPI application currently includes:
 - ✅ Logging setup (US0.2-T6) - Structured logging with environment-based configuration
 - ✅ Error handling (US0.2-T7) - Global exception handlers with consistent error responses
 - ✅ Database configuration module (US0.4-T2) - SQLAlchemy engine, session factory, and dependency injection
+- ✅ Initial database migration (US0.4-T3) - Alembic migration baseline established
 
 **Upcoming tasks:**
 
-- Database migrations and schema setup (US0.4)
+- Continue database setup: dependency injection, health check, management scripts (US0.4-T4 through US0.4-T9)
 - User authentication and authorization (US1.x)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.2-backend-development-environment-setup-tasks.md`
