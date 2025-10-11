@@ -199,10 +199,10 @@ Database configuration is located in `app/core/database.py` and includes:
 
 Database settings can be configured via environment variables:
 
-| Setting       | Environment Variable | Default               | Description                           |
-| ------------- | -------------------- | --------------------- | ------------------------------------- |
-| Database URL  | `DATABASE_URL`       | `sqlite:///./app.db`  | Database connection URL               |
-| DB Echo       | `DB_ECHO`            | `false`               | Enable SQLAlchemy SQL query logging   |
+| Setting      | Environment Variable | Default              | Description                         |
+| ------------ | -------------------- | -------------------- | ----------------------------------- |
+| Database URL | `DATABASE_URL`       | `sqlite:///./app.db` | Database connection URL             |
+| DB Echo      | `DB_ECHO`            | `false`              | Enable SQLAlchemy SQL query logging |
 
 #### Using the Database in Endpoints
 
@@ -237,7 +237,7 @@ from app.core.database import Base
 
 class User(Base):
     __tablename__ = "users"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
