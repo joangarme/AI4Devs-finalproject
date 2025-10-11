@@ -123,6 +123,7 @@ backend/
 │   ├── core/            # Core functionality and utilities
 │   │   ├── __init__.py
 │   │   ├── config.py    # Configuration management
+│   │   ├── database.py  # Database configuration and session management
 │   │   ├── exceptions.py # Custom exception classes
 │   │   └── logging.py   # Structured logging configuration
 │   ├── models/          # Database models and ORM
@@ -141,6 +142,7 @@ backend/
 │   │       ├── core/
 │   │       │   ├── __init__.py
 │   │       │   ├── test_config.py     # Configuration tests
+│   │       │   ├── test_database.py   # Database configuration tests
 │   │       │   ├── test_exceptions.py # Exception classes tests
 │   │       │   └── test_logging.py    # Logging tests
 │   │       ├── models/
@@ -179,6 +181,76 @@ The following core dependencies are installed and configured:
 - **HTTPX 0.25.2** - HTTP client for testing FastAPI applications
 
 All dependencies are pinned to specific versions in `requirements.txt` for reproducible builds.
+
+### Database Configuration
+
+The application uses SQLAlchemy 2.0 for database operations with SQLite as the default database.
+
+#### Database Module Location
+
+Database configuration is located in `app/core/database.py` and includes:
+
+- **Engine**: SQLAlchemy database engine configured for SQLite
+- **SessionLocal**: Session factory for creating database sessions
+- **Base**: Declarative base class for all database models
+- **get_db()**: FastAPI dependency for database session injection
+
+#### Database Settings
+
+Database settings can be configured via environment variables:
+
+| Setting       | Environment Variable | Default               | Description                           |
+| ------------- | -------------------- | --------------------- | ------------------------------------- |
+| Database URL  | `DATABASE_URL`       | `sqlite:///./app.db`  | Database connection URL               |
+| DB Echo       | `DB_ECHO`            | `false`               | Enable SQLAlchemy SQL query logging   |
+
+#### Using the Database in Endpoints
+
+To use the database in FastAPI endpoints, inject the `get_db` dependency:
+
+```python
+from fastapi import Depends
+from sqlalchemy.orm import Session
+from app.core.database import get_db
+
+@app.get("/users")
+def get_users(db: Session = Depends(get_db)):
+    # Use the database session
+    users = db.query(User).all()
+    return users
+```
+
+#### Database Connection Features
+
+- **Thread Safety**: Configured with `check_same_thread=False` for SQLite to work with FastAPI's threading model
+- **Connection Pre-ping**: Automatically verifies connections before use
+- **Automatic Cleanup**: Database sessions are automatically closed after each request
+- **Session Management**: Each request gets its own database session
+
+#### Creating Database Models
+
+All database models should inherit from the `Base` class:
+
+```python
+from sqlalchemy import Column, Integer, String
+from app.core.database import Base
+
+class User(Base):
+    __tablename__ = "users"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, nullable=False)
+```
+
+#### SQLAlchemy 2.0 Compatibility
+
+The database configuration uses SQLAlchemy 2.0 features:
+
+- Modern `DeclarativeBase` class for model inheritance
+- Type hints for better IDE support
+- Proper session lifecycle management
+- SQLite-specific optimizations
 
 ### Database Migrations with Alembic
 
@@ -388,6 +460,8 @@ For Pydantic validation errors (422 status), detailed field-level information is
 | CORS Credentials | `CORS_ALLOW_CREDENTIALS` | `true`                         | Allow credentials in CORS                             |
 | CORS Methods     | `CORS_ALLOW_METHODS`     | `*`                            | Allowed HTTP methods (comma-separated)                |
 | CORS Headers     | `CORS_ALLOW_HEADERS`     | `*`                            | Allowed headers (comma-separated)                     |
+| Database URL     | `DATABASE_URL`           | `sqlite:///./app.db`           | Database connection URL (SQLite by default)           |
+| DB Echo          | `DB_ECHO`                | `false`                        | Enable SQLAlchemy SQL query logging                   |
 
 #### Configuration Examples
 
@@ -441,6 +515,7 @@ python -m pytest --cov=app --cov-report=term-missing
 
 # Run specific test files
 python -m pytest tests/unit/app/core/test_config.py -v
+python -m pytest tests/unit/app/core/test_database.py -v
 python -m pytest tests/unit/app/core/test_exceptions.py -v
 python -m pytest tests/integration/app/test_main.py -v
 
@@ -456,6 +531,7 @@ python -m pytest tests/integration/ -v
 
 - **Unit Tests** (`tests/unit/`): Fast, isolated tests that test individual components without external dependencies
   - `test_config.py` - Configuration management tests
+  - `test_database.py` - Database configuration and session management tests
   - `test_exceptions.py` - Custom exception classes tests
   - `test_logging.py` - Logging functionality tests
 - **Integration Tests** (`tests/integration/`): Tests that verify multiple components working together, including API endpoints
@@ -510,10 +586,11 @@ The FastAPI application currently includes:
 - ✅ Environment variables management (US0.2-T5)
 - ✅ Logging setup (US0.2-T6) - Structured logging with environment-based configuration
 - ✅ Error handling (US0.2-T7) - Global exception handlers with consistent error responses
+- ✅ Database configuration module (US0.4-T2) - SQLAlchemy engine, session factory, and dependency injection
 
 **Upcoming tasks:**
 
-- Development server configuration (US0.2-T8)
-- Testing framework setup (US0.2-T9)
+- Database migrations and schema setup (US0.4)
+- User authentication and authorization (US1.x)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.2-backend-development-environment-setup-tasks.md`
