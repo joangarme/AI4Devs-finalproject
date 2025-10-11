@@ -296,14 +296,14 @@ The application uses Vite's built-in environment variable handling for configura
 
 All environment variables must be prefixed with `VITE_` to be exposed to the client:
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `VITE_API_BASE_URL` | Backend API base URL | `http://localhost:8000` |
-| `VITE_API_VERSION` | API version prefix | `v1` |
-| `VITE_NODE_ENV` | Environment mode | `development` |
-| `VITE_APP_NAME` | Application name | `Personal Finance Manager` |
-| `VITE_APP_VERSION` | Application version | `1.0.0` |
-| `VITE_ENABLE_DEBUG` | Enable debug mode | `false` |
+| Variable            | Description          | Default                    |
+| ------------------- | -------------------- | -------------------------- |
+| `VITE_API_BASE_URL` | Backend API base URL | `http://localhost:8000`    |
+| `VITE_API_VERSION`  | API version prefix   | `v1`                       |
+| `VITE_NODE_ENV`     | Environment mode     | `development`              |
+| `VITE_APP_NAME`     | Application name     | `Personal Finance Manager` |
+| `VITE_APP_VERSION`  | Application version  | `1.0.0`                    |
+| `VITE_ENABLE_DEBUG` | Enable debug mode    | `false`                    |
 
 #### Usage in Code
 
@@ -341,6 +341,7 @@ interface ImportMetaEnv {
 ```
 
 This enables:
+
 - **IntelliSense** in your editor
 - **Type checking** at compile time
 - **Auto-completion** for environment variable names
