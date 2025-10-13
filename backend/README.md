@@ -49,6 +49,8 @@ Backend API for the Personal Finance Tracker application built with FastAPI.
 
 5. **Configure environment variables** (optional):
 
+   The application includes a `.env.example` file with all available configuration options, including database settings.
+
    ```bash
    # Copy the example environment file
    cp .env.example .env
@@ -56,6 +58,10 @@ Backend API for the Personal Finance Tracker application built with FastAPI.
    # Edit .env file with your preferred settings
    # The application will work with default values if .env is not present
    ```
+
+   Key database settings you can configure:
+   - `DATABASE_URL` - Database connection URL (defaults to `sqlite:///./app.db`)
+   - `DB_ECHO` - Enable SQLAlchemy SQL query logging (defaults to `false`)
 
 6. **Initialize the database**:
 
@@ -961,6 +967,12 @@ For Pydantic validation errors (422 status), detailed field-level information is
 
 #### Configuration Examples
 
+The project includes a `.env.example` file with all available settings and detailed comments. Copy it to create your own `.env` file:
+
+```bash
+cp .env.example .env
+```
+
 **Development environment:**
 
 ```bash
@@ -969,6 +981,8 @@ DEBUG=true
 LOG_LEVEL=DEBUG
 PORT=8000
 CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+DATABASE_URL=sqlite:///./app.db
+DB_ECHO=false
 ```
 
 **Production environment:**
@@ -979,6 +993,8 @@ DEBUG=false
 LOG_LEVEL=WARNING
 PORT=80
 CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+DATABASE_URL=postgresql://user:password@localhost:5432/proddb
+DB_ECHO=false
 ```
 
 ### Development Workflow
