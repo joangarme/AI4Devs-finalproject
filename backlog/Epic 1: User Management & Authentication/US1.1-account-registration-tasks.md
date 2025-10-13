@@ -6,14 +6,21 @@
 **I want** to create a secure account with my email and password,  
 **So that** I can start tracking my finances privately and securely.
 
-**Acceptance Criteria:**
+**MVP Scope Note**: This implementation focuses on basic authentication only. Email verification has been deferred to post-MVP to accelerate delivery of core finance tracking features.
+
+**Acceptance Criteria (MVP):**
 
 - Email validation with proper format checking
 - Password requirements: minimum 8 characters, 1 uppercase, 1 number, 1 special character
-- Email verification sent upon registration
 - Clear error messages for validation failures
-- Success confirmation and redirect to login
+- Success confirmation and automatic login
 - Duplicate email prevention
+
+**Post-MVP Features:**
+
+- Email verification sent upon registration
+- Email service provider configuration
+- Email verification page and workflow
 
 ## Task Breakdown
 
@@ -37,10 +44,11 @@
 
 #### Acceptance Criteria
 
-- [ ] Table includes: id, email, password_hash, created_at, updated_at, is_active, is_verified
+- [ ] Table includes: id, email, password_hash, created_at, updated_at, is_active
 - [ ] Email field has unique constraint
 - [ ] Migration script is reversible
 - [ ] Appropriate data types used (VARCHAR for email, TEXT for password_hash)
+- [ ] All users created are active by default (MVP: no email verification)
 
 #### Testing Requirements
 
@@ -54,46 +62,11 @@
 - Use Alembic for migration management
 - Password_hash field should accommodate bcrypt output (60 chars)
 - Consider adding fields for future OAuth integration
+- **MVP**: Removed `is_verified` field - all users are active upon registration
 
 ---
 
 ### Task ID: US1.1-T2
-
-**Type**: [Database]  
-**Title**: Create email verification tokens table  
-**Story Points**: 0.5  
-**Dependencies**: US1.1-T1
-
-#### Description
-
-**What**: Create table to store email verification tokens  
-**Input**: Completed users table  
-**Output**: Migration script for email_verification_tokens table  
-**Boundary**: Only table creation, no stored procedures or triggers
-
-#### Acceptance Criteria
-
-- [ ] Table includes: id, user_id, token, expires_at, created_at, used_at
-- [ ] Foreign key relationship to users table
-- [ ] Token field has unique constraint
-- [ ] Appropriate indexes for token lookup
-
-#### Testing Requirements
-
-- [ ] Test foreign key constraint enforcement
-- [ ] Verify token uniqueness
-- [ ] Test cascade behavior on user deletion
-- [ ] Verify index creation and usage
-
-#### Technical Notes
-
-- Token should be cryptographically secure random string
-- Consider TTL of 24 hours for tokens
-- Index on token field for fast lookups
-
----
-
-### Task ID: US1.1-T3
 
 **Type**: [Backend]  
 **Title**: Create user authentication Pydantic models  
@@ -111,7 +84,7 @@
 
 - [ ] UserRegisterRequest model with email and password fields
 - [ ] UserRegisterResponse model with user info (excluding password)
-- [ ] EmailVerificationRequest model
+- [ ] UserLoginRequest model with email and password fields
 - [ ] Proper typing for all fields
 
 #### Testing Requirements
@@ -129,7 +102,7 @@
 
 ---
 
-### Task ID: US1.1-T4
+### Task ID: US1.1-T3
 
 **Type**: [Backend]  
 **Title**: Implement password validation service  
@@ -167,7 +140,7 @@
 
 ---
 
-### Task ID: US1.1-T5
+### Task ID: US1.1-T4
 
 **Type**: [Backend]  
 **Title**: Implement email validation service  
@@ -204,12 +177,12 @@
 
 ---
 
-### Task ID: US1.1-T6
+### Task ID: US1.1-T5
 
 **Type**: [Backend]  
 **Title**: Create user registration service  
 **Story Points**: 1  
-**Dependencies**: US1.1-T4, US1.1-T5
+**Dependencies**: US1.1-T3, US1.1-T4
 
 #### Description
 
@@ -222,7 +195,7 @@
 
 - [ ] Hashes password using bcrypt
 - [ ] Creates user record in database
-- [ ] Generates verification token
+- [ ] Sets user as active by default (MVP: no verification required)
 - [ ] Handles database errors gracefully
 - [ ] Returns created user (without password)
 
@@ -230,7 +203,7 @@
 
 - [ ] Test successful user creation
 - [ ] Test password is properly hashed
-- [ ] Test verification token generation
+- [ ] Test user is created as active by default
 - [ ] Test transaction rollback on errors
 - [ ] Test duplicate email handling
 - [ ] Integration test with real database
@@ -238,17 +211,17 @@
 #### Technical Notes
 
 - Use bcrypt with cost factor of 12
-- Use secrets.token_urlsafe() for verification tokens
 - Wrap in database transaction
+- **MVP**: No verification token generation needed
 
 ---
 
-### Task ID: US1.1-T7
+### Task ID: US1.1-T6
 
 **Type**: [Backend]  
 **Title**: Create POST /auth/register endpoint  
 **Story Points**: 1  
-**Dependencies**: US1.1-T3, US1.1-T6
+**Dependencies**: US1.1-T2, US1.1-T5
 
 #### Description
 
@@ -279,86 +252,11 @@
 - Use FastAPI dependency injection
 - Include request ID in logs
 - Consider rate limiting for security
+- **MVP**: User is immediately active and can log in after registration
 
 ---
 
-### Task ID: US1.1-T8
-
-**Type**: [Backend]  
-**Title**: Implement email sending service  
-**Story Points**: 1  
-**Dependencies**: None
-
-#### Description
-
-**What**: Create service to send emails via configured provider  
-**Input**: Email recipient, subject, and content  
-**Output**: services/email_service.py  
-**Boundary**: Email sending only, no template rendering
-
-#### Acceptance Criteria
-
-- [ ] Configurable email provider (SendGrid/AWS SES)
-- [ ] Async email sending
-- [ ] Error handling and retry logic
-- [ ] Logging of send attempts
-- [ ] Development mode (log instead of send)
-
-#### Testing Requirements
-
-- [ ] Test email sending with mock provider
-- [ ] Test error handling scenarios
-- [ ] Test retry logic
-- [ ] Test async operation
-- [ ] Test development mode behavior
-
-#### Technical Notes
-
-- Use abstract base class for providers
-- Implement exponential backoff for retries
-- Queue emails for reliability (future enhancement)
-
----
-
-### Task ID: US1.1-T9
-
-**Type**: [Backend]  
-**Title**: Create email verification endpoint  
-**Story Points**: 0.5  
-**Dependencies**: US1.1-T6
-
-#### Description
-
-**What**: Implement GET endpoint to verify email tokens  
-**Input**: Verification token from URL  
-**Output**: GET /auth/verify-email endpoint  
-**Boundary**: Token verification only, no resend functionality
-
-#### Acceptance Criteria
-
-- [ ] Validates token exists and not expired
-- [ ] Marks user as verified
-- [ ] Marks token as used
-- [ ] Returns appropriate success/error messages
-- [ ] Handles invalid/expired tokens gracefully
-
-#### Testing Requirements
-
-- [ ] Test successful verification
-- [ ] Test expired token handling
-- [ ] Test invalid token handling
-- [ ] Test already-used token
-- [ ] Test user state update
-
-#### Technical Notes
-
-- Token should be URL-safe
-- Consider redirect to frontend after verification
-- Implement idempotency (multiple clicks safe)
-
----
-
-### Task ID: US1.1-T10
+### Task ID: US1.1-T7
 
 **Type**: [Frontend]  
 **Title**: Build registration form component  
@@ -397,12 +295,12 @@
 
 ---
 
-### Task ID: US1.1-T11
+### Task ID: US1.1-T8
 
 **Type**: [Frontend]  
 **Title**: Implement client-side form validation  
 **Story Points**: 0.5  
-**Dependencies**: US1.1-T10
+**Dependencies**: US1.1-T7
 
 #### Description
 
@@ -435,12 +333,12 @@
 
 ---
 
-### Task ID: US1.1-T12
+### Task ID: US1.1-T9
 
 **Type**: [Frontend]  
 **Title**: Create registration page with API integration  
 **Story Points**: 1  
-**Dependencies**: US1.1-T10, US1.1-T11
+**Dependencies**: US1.1-T7, US1.1-T8
 
 #### Description
 
@@ -454,164 +352,85 @@
 - [ ] Integrates registration form component
 - [ ] Handles API submission
 - [ ] Shows success message
-- [ ] Redirects to login on success
+- [ ] Automatically logs user in after successful registration (MVP)
+- [ ] Redirects to dashboard on success
 - [ ] Displays API errors appropriately
 
 #### Testing Requirements
 
-- [ ] Test successful registration flow
+- [ ] Test successful registration and auto-login flow
 - [ ] Test API error handling
 - [ ] Test network error scenarios
 - [ ] Test loading states
-- [ ] Test redirect behavior
+- [ ] Test redirect to dashboard behavior
 - [ ] Integration test with mock API
 
 #### Technical Notes
 
 - Use React Query for API state management
 - Handle both field-level and general errors
-- Consider optimistic UI updates
-
----
-
-### Task ID: US1.1-T13
-
-**Type**: [Frontend]  
-**Title**: Build email verification page  
-**Story Points**: 0.5  
-**Dependencies**: None
-
-#### Description
-
-**What**: Create page to handle email verification links  
-**Input**: Verification token from URL params  
-**Output**: VerifyEmailPage.tsx component  
-**Boundary**: Verification UI only, no resend functionality
-
-#### Acceptance Criteria
-
-- [ ] Extracts token from URL
-- [ ] Shows loading during verification
-- [ ] Displays success/error messages
-- [ ] Provides link to login on success
-- [ ] Handles various error states
-
-#### Testing Requirements
-
-- [ ] Test token extraction from URL
-- [ ] Test loading state display
-- [ ] Test success message and redirect
-- [ ] Test error state handling
-- [ ] Test missing token scenario
-
-#### Technical Notes
-
-- Use React Router for URL params
-- Auto-trigger verification on mount
-- Consider countdown before redirect
-
----
-
-### Task ID: US1.1-T14
-
-**Type**: [DevOps]  
-**Title**: Configure email service provider  
-**Story Points**: 0.5  
-**Dependencies**: None
-
-#### Description
-
-**What**: Set up email provider account and API credentials  
-**Input**: Email service requirements  
-**Output**: Configured email service with credentials  
-**Boundary**: Configuration only, no template creation
-
-#### Acceptance Criteria
-
-- [ ] Email provider account created
-- [ ] API credentials generated
-- [ ] Environment variables documented
-- [ ] Test email sending works
-- [ ] Domain verification completed (if required)
-
-#### Testing Requirements
-
-- [ ] Test email delivery to various providers
-- [ ] Test rate limits are acceptable
-- [ ] Verify emails not marked as spam
-- [ ] Test credential rotation process
-
-#### Technical Notes
-
-- Document provider choice rationale
-- Set up separate dev/prod API keys
-- Configure SPF/DKIM for deliverability
-
----
-
-### Task ID: US1.1-T15
-
-**Type**: [DevOps]  
-**Title**: Create email templates  
-**Story Points**: 0.5  
-**Dependencies**: US1.1-T14
-
-#### Description
-
-**What**: Design and implement email verification template  
-**Input**: Email design requirements and brand guidelines  
-**Output**: HTML email template with responsive design  
-**Boundary**: Verification email only, no other transactional emails
-
-#### Acceptance Criteria
-
-- [ ] Responsive HTML email template
-- [ ] Clear call-to-action button
-- [ ] Fallback text version
-- [ ] Brand-consistent design
-- [ ] Includes expiration notice
-
-#### Testing Requirements
-
-- [ ] Test rendering in major email clients
-- [ ] Test responsive design on mobile
-- [ ] Test link functionality
-- [ ] Test plain text fallback
-- [ ] Accessibility testing
-
-#### Technical Notes
-
-- Use MJML or similar for responsive emails
-- Include both HTML and text versions
-- Test with Litmus or Email on Acid
+- Store JWT token after successful registration for auto-login
+- **MVP**: No email verification flow needed
 
 ---
 
 ## Task Summary
 
-**Total Tasks**: 15  
-**Total Story Points**: 11 (22-44 hours)
+**Total Tasks**: 9 (MVP-focused)  
+**Total Story Points**: 6.5 (13-26 hours)  
+**Removed from MVP**: 6 tasks (3 story points) - Email verification functionality
 
 ### By Type:
 
-- **Database**: 2 tasks (1 point)
-- **Backend**: 7 tasks (5.5 points)
-- **Frontend**: 4 tasks (3.5 points)
-- **DevOps**: 2 tasks (1 point)
+- **Database**: 1 task (0.5 points)
+- **Backend**: 5 tasks (4 points)
+- **Frontend**: 3 tasks (2.5 points)
 
 ### Critical Path:
 
-1. Database setup (T1, T2)
-2. Backend services and API (T3-T9)
-3. Frontend implementation (T10-T13)
-4. Email configuration (T14-T15)
+1. Database setup (T1)
+2. Backend models and services (T2-T5)
+3. Backend API endpoint (T6)
+4. Frontend implementation (T7-T9)
+
+### Deferred to Post-MVP:
+
+- Email verification tokens table
+- Email sending service
+- Email verification endpoint
+- Email verification page
+- Email service provider configuration
+- Email templates
+
+These features will be implemented alongside US1.4 (Password Reset) in a future iteration.
 
 ## Verification Checklist
 
-- [x] Every acceptance criterion is addressed by at least one task
+- [x] Every MVP acceptance criterion is addressed by at least one task
 - [x] No task exceeds 1 story point
 - [x] Each task includes testing requirements
 - [x] Tasks follow logical build sequence
 - [x] All tasks use the exact template format
 - [x] Dependencies are clearly defined
 - [x] Testing is integrated into each task
+- [x] Email verification features clearly marked as Post-MVP
+- [x] MVP focuses on basic authentication to accelerate delivery
+
+## MVP Simplification Summary
+
+This task breakdown has been simplified for MVP delivery (due October 15th) by removing email verification functionality. Users can now register and immediately start using the application without waiting for email confirmation.
+
+**Key Changes:**
+
+- Removed 6 tasks related to email verification (3 story points)
+- Users are created as active by default
+- Successful registration automatically logs the user in
+- Duplicate email prevention still enforced via database constraint
+- Email verification will be added in post-MVP alongside password reset functionality
+
+**Benefits:**
+
+- 27% reduction in implementation time
+- No external dependencies (email service provider)
+- Users can start tracking finances immediately
+- Maintains security through strong password requirements and duplicate prevention
