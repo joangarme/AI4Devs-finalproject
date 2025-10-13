@@ -1,5 +1,21 @@
 # Task Breakdown: US1.1 - Account Registration
 
+## Jira References
+
+**Epic**: [AI4DFP-42 - User Management & Authentication](https://joangarme.atlassian.net/browse/AI4DFP-42)  
+**Story**: [AI4DFP-43 - US1.1: Account Registration](https://joangarme.atlassian.net/browse/AI4DFP-43)
+
+**Subtasks**:
+- [AI4DFP-44 - US1.1-T1: Create users table schema](https://joangarme.atlassian.net/browse/AI4DFP-44)
+- [AI4DFP-45 - US1.1-T2: Create user authentication Pydantic models](https://joangarme.atlassian.net/browse/AI4DFP-45)
+- [AI4DFP-46 - US1.1-T3: Implement password validation service](https://joangarme.atlassian.net/browse/AI4DFP-46)
+- [AI4DFP-47 - US1.1-T4: Implement email validation service](https://joangarme.atlassian.net/browse/AI4DFP-47)
+- [AI4DFP-48 - US1.1-T5: Create user registration service](https://joangarme.atlassian.net/browse/AI4DFP-48)
+- [AI4DFP-49 - US1.1-T6: Create POST /auth/register endpoint](https://joangarme.atlassian.net/browse/AI4DFP-49)
+- [AI4DFP-50 - US1.1-T7: Build registration form component](https://joangarme.atlassian.net/browse/AI4DFP-50)
+- [AI4DFP-51 - US1.1-T8: Implement client-side form validation](https://joangarme.atlassian.net/browse/AI4DFP-51)
+- [AI4DFP-52 - US1.1-T9: Create registration page with API integration](https://joangarme.atlassian.net/browse/AI4DFP-52)
+
 ## User Story
 
 **As a** Sarah (Budget-Conscious Partner),  
@@ -30,6 +46,7 @@
 
 ### Task ID: US1.1-T1
 
+**Jira**: [AI4DFP-44](https://joangarme.atlassian.net/browse/AI4DFP-44)  
 **Type**: [Database]  
 **Title**: Create users table schema  
 **Story Points**: 0.5  
@@ -68,6 +85,7 @@
 
 ### Task ID: US1.1-T2
 
+**Jira**: [AI4DFP-45](https://joangarme.atlassian.net/browse/AI4DFP-45)  
 **Type**: [Backend]  
 **Title**: Create user authentication Pydantic models  
 **Story Points**: 0.5  
@@ -104,6 +122,7 @@
 
 ### Task ID: US1.1-T3
 
+**Jira**: [AI4DFP-46](https://joangarme.atlassian.net/browse/AI4DFP-46)  
 **Type**: [Backend]  
 **Title**: Implement password validation service  
 **Story Points**: 0.5  
@@ -142,6 +161,7 @@
 
 ### Task ID: US1.1-T4
 
+**Jira**: [AI4DFP-47](https://joangarme.atlassian.net/browse/AI4DFP-47)  
 **Type**: [Backend]  
 **Title**: Implement email validation service  
 **Story Points**: 0.5  
@@ -179,6 +199,7 @@
 
 ### Task ID: US1.1-T5
 
+**Jira**: [AI4DFP-48](https://joangarme.atlassian.net/browse/AI4DFP-48)  
 **Type**: [Backend]  
 **Title**: Create user registration service  
 **Story Points**: 1  
@@ -218,6 +239,7 @@
 
 ### Task ID: US1.1-T6
 
+**Jira**: [AI4DFP-49](https://joangarme.atlassian.net/browse/AI4DFP-49)  
 **Type**: [Backend]  
 **Title**: Create POST /auth/register endpoint  
 **Story Points**: 1  
@@ -258,6 +280,7 @@
 
 ### Task ID: US1.1-T7
 
+**Jira**: [AI4DFP-50](https://joangarme.atlassian.net/browse/AI4DFP-50)  
 **Type**: [Frontend]  
 **Title**: Build registration form component  
 **Story Points**: 1  
@@ -297,6 +320,7 @@
 
 ### Task ID: US1.1-T8
 
+**Jira**: [AI4DFP-51](https://joangarme.atlassian.net/browse/AI4DFP-51)  
 **Type**: [Frontend]  
 **Title**: Implement client-side form validation  
 **Story Points**: 0.5  
@@ -335,6 +359,7 @@
 
 ### Task ID: US1.1-T9
 
+**Jira**: [AI4DFP-52](https://joangarme.atlassian.net/browse/AI4DFP-52)  
 **Type**: [Frontend]  
 **Title**: Create registration page with API integration  
 **Story Points**: 1  
