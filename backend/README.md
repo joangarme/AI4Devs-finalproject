@@ -601,6 +601,249 @@ All commands assume:
 - All commands provide clear feedback about what they're doing
 - Commands fail gracefully with helpful error messages
 
+### Database Backup and Recovery
+
+The project uses SQLite for development, which makes backup and recovery straightforward. This section covers manual backup strategies for development environments and recommendations for production deployments.
+
+#### Database File Location
+
+The SQLite database file is located at:
+
+```
+backend/app.db
+```
+
+This location is configurable via the `DATABASE_URL` environment variable (default: `sqlite:///./app.db`). The path is relative to the `backend/` directory.
+
+**Important files for backup:**
+
+- **Database file**: `backend/app.db` - Contains all application data
+- **Migration files**: `backend/alembic/versions/*.py` - Schema version history (tracked in git)
+- **Alembic version**: Stored in the `alembic_version` table within the database
+
+#### Manual Backup Strategy (Development)
+
+For development environments, SQLite databases can be backed up using simple file copy operations.
+
+**Create a backup:**
+
+```bash
+# From the backend/ directory
+# Simple backup with timestamp
+cp app.db app.db.backup.$(date +%Y%m%d_%H%M%S)
+
+# Or with a descriptive name
+cp app.db app.db.backup.before_user_migration
+```
+
+**Verify the backup:**
+
+```bash
+# Check the backup file exists and has content
+ls -lh app.db.backup.*
+
+# Verify the backup is a valid SQLite database
+sqlite3 app.db.backup.YYYYMMDD_HHMMSS "SELECT 1;"
+```
+
+**Best practices for development backups:**
+
+1. **Before migrations**: Always backup before applying new migrations
+2. **Before major changes**: Backup before testing significant data modifications
+3. **Regular snapshots**: Create periodic backups during active development
+4. **Name clearly**: Use descriptive names or timestamps in backup filenames
+5. **Test backups**: Periodically verify backups can be restored successfully
+
+#### Recovery Procedure
+
+To restore a database from a backup:
+
+**Step 1: Stop the application**
+
+```bash
+# Stop uvicorn if it's running
+# Press Ctrl+C in the terminal running the dev server
+```
+
+**Step 2: Backup current database** (optional but recommended)
+
+```bash
+# Create a backup of the current state before overwriting
+cp app.db app.db.before_recovery.$(date +%Y%m%d_%H%M%S)
+```
+
+**Step 3: Restore from backup**
+
+```bash
+# Replace current database with backup
+cp app.db.backup.YYYYMMDD_HHMMSS app.db
+
+# Or use the backup filename you created
+cp app.db.backup.before_user_migration app.db
+```
+
+**Step 4: Verify migration state**
+
+```bash
+# Check the current migration version
+alembic current
+
+# The output should show the migration version that was active when the backup was created
+# Example output: 1f08170cdfb3 (head)
+```
+
+**Step 5: Apply pending migrations if needed**
+
+```bash
+# If the backup is from an older migration version,
+# apply any new migrations to bring it up to date
+alembic upgrade head
+
+# Or use the Makefile command
+make db-upgrade
+```
+
+**Step 6: Restart the application**
+
+```bash
+# Start the development server
+uvicorn app.main:app --reload
+```
+
+**Step 7: Verify the recovery**
+
+```bash
+# Test the database health endpoint
+curl http://localhost:8000/health/db
+
+# Expected response:
+# {"status":"healthy","message":"Database connection is operational",...}
+```
+
+#### Complete Recovery Example
+
+Here's a complete example of backing up and restoring:
+
+```bash
+# ============================================
+# Scenario: Testing a risky migration
+# ============================================
+
+# 1. Create a backup before applying the migration
+cp app.db app.db.backup.before_risky_migration
+alembic current > migration_version.txt  # Save current version
+
+# 2. Apply the migration
+make db-migrate MESSAGE="risky user table changes"
+make db-upgrade
+
+# 3. Something goes wrong - need to rollback
+# Stop the server (Ctrl+C)
+
+# 4. Restore the backup
+cp app.db.backup.before_risky_migration app.db
+
+# 5. Verify the restoration
+alembic current  # Should match the version saved in migration_version.txt
+
+# 6. Delete the failed migration file
+rm alembic/versions/<failed_migration_file>.py
+
+# 7. Restart and try again
+uvicorn app.main:app --reload
+```
+
+#### Migration History Backup
+
+Migration files are tracked in version control (git) and located in:
+
+```
+backend/alembic/versions/
+```
+
+**Backing up migration history:**
+
+Migration files are automatically backed up through git commits. The `alembic_version` table in the database tracks which migrations have been applied.
+
+**To preserve the complete database state including migration version:**
+
+1. **Backup the database file** (contains `alembic_version` table)
+2. **Ensure migration files are committed to git** (already tracked)
+3. **Both are needed for complete recovery**
+
+**Verifying migration state after recovery:**
+
+```bash
+# Check which migrations have been applied (from database)
+alembic current
+
+# Check available migration files (from filesystem)
+ls -la alembic/versions/
+
+# View complete migration history
+alembic history --verbose
+```
+
+#### Backup Automation Recommendations
+
+For development environments, manual backups are sufficient. However, production environments should implement automated backup solutions.
+
+**Production Backup Recommendations:**
+
+1. **Automated Backups**
+   - Schedule daily backups using cron jobs or cloud provider tools
+   - Keep multiple backup versions (e.g., last 7 daily, last 4 weekly, last 12 monthly)
+   - Store backups in a separate location from the primary database
+
+2. **Cloud-Based Solutions**
+   - Use cloud provider backup services (AWS RDS automated backups, Azure SQL Database backup, etc.)
+   - Consider migrating from SQLite to PostgreSQL/MySQL for production
+   - Implement point-in-time recovery capabilities
+
+3. **Backup Testing**
+   - Regularly test backup restoration procedures
+   - Verify backup integrity with automated checks
+   - Document recovery time objectives (RTO) and recovery point objectives (RPO)
+
+4. **Example Automated Backup Script** (for SQLite in production)
+
+   ```bash
+   #!/bin/bash
+   # backup_db.sh - Automated SQLite backup script
+   
+   BACKUP_DIR="/path/to/backups"
+   DB_FILE="/path/to/app.db"
+   TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+   BACKUP_FILE="${BACKUP_DIR}/app.db.backup.${TIMESTAMP}"
+   
+   # Create backup
+   cp "${DB_FILE}" "${BACKUP_FILE}"
+   
+   # Compress backup
+   gzip "${BACKUP_FILE}"
+   
+   # Keep only last 30 days of backups
+   find "${BACKUP_DIR}" -name "app.db.backup.*.gz" -mtime +30 -delete
+   
+   # Log the backup
+   echo "[${TIMESTAMP}] Backup created: ${BACKUP_FILE}.gz"
+   ```
+
+5. **Monitoring and Alerts**
+   - Monitor backup success/failure
+   - Set up alerts for failed backups
+   - Track backup file sizes for anomaly detection
+   - Verify backup files are not corrupted
+
+**Note**: SQLite is ideal for development and small-scale applications. For production environments with multiple concurrent users, consider migrating to a client-server database like PostgreSQL or MySQL, which offer more robust backup and recovery features.
+
+#### Important Notes
+
+- **`.db` files in `.gitignore`**: Database files are excluded from version control to prevent committing sensitive data and large binary files
+- **Migration files ARE in git**: Migration scripts (`.py` files) in `alembic/versions/` are tracked in version control
+- **Backup before destructive operations**: Always backup before `make db-reset` or manual database deletions
+- **Test recovery procedures**: Periodically test your backup and recovery process to ensure it works when needed
+
 #### Verifying Installation
 
 After installing dependencies, you can verify the installation:
