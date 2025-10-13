@@ -473,6 +473,134 @@ Run the tests with:
 python -m pytest tests/unit/app/scripts/test_init_db.py -v
 ```
 
+### Database Management Commands
+
+The project includes a Makefile with convenient commands for common database operations. These commands simplify database management tasks during development.
+
+#### Available Commands
+
+**Show all available commands:**
+
+```bash
+make help
+# or simply
+make
+```
+
+**Initialize database:**
+
+```bash
+make db-init
+```
+
+Initializes the database and runs all migrations. This is the same as running `python -m app.scripts.init_db`. Safe to run multiple times (idempotent).
+
+**Create a new migration:**
+
+```bash
+make db-migrate MESSAGE="description of changes"
+```
+
+Creates a new Alembic migration with autogenerate based on model changes. Always review the generated migration file in `alembic/versions/` before applying it.
+
+**Apply migrations:**
+
+```bash
+make db-upgrade
+```
+
+Applies all pending migrations to bring the database up to the latest version. Equivalent to `alembic upgrade head`.
+
+**Rollback last migration:**
+
+```bash
+make db-downgrade
+```
+
+Rolls back the last applied migration. Useful for testing or reverting recent changes. Equivalent to `alembic downgrade -1`.
+
+**Reset database:**
+
+```bash
+make db-reset
+```
+
+**⚠️ DESTRUCTIVE OPERATION**: Deletes the entire database and recreates it from scratch by running all migrations. Requires confirmation by typing "yes". Use this when you need a clean slate.
+
+**Check current migration:**
+
+```bash
+make db-current
+```
+
+Shows the current database migration version. Useful for verifying which migrations have been applied.
+
+**View migration history:**
+
+```bash
+make db-history
+```
+
+Shows the complete migration history with details about each migration.
+
+#### Command Examples
+
+**Typical workflow for adding a new model:**
+
+```bash
+# 1. Create or modify your model in app/models/
+# 2. Generate migration
+make db-migrate MESSAGE="add user table"
+
+# 3. Review the generated migration file
+cat alembic/versions/<generated_file>.py
+
+# 4. Apply the migration
+make db-upgrade
+
+# 5. Verify it was applied
+make db-current
+```
+
+**Rollback and fix a migration:**
+
+```bash
+# Rollback the last migration
+make db-downgrade
+
+# Delete the migration file
+rm alembic/versions/<migration_file>.py
+
+# Create a corrected version
+make db-migrate MESSAGE="add user table (fixed)"
+
+# Apply the corrected migration
+make db-upgrade
+```
+
+**Complete database reset:**
+
+```bash
+# Reset database (requires typing "yes" to confirm)
+make db-reset
+```
+
+#### Command Requirements
+
+All commands assume:
+
+- Python virtual environment is activated
+- Alembic is configured (alembic.ini exists)
+- Database configuration is set in .env file (or using defaults)
+- Commands are run from the `backend/` directory
+
+#### Safety Features
+
+- **db-reset** requires explicit confirmation to prevent accidental data loss
+- **db-migrate** reminds you to review the generated migration before applying
+- All commands provide clear feedback about what they're doing
+- Commands fail gracefully with helpful error messages
+
 #### Verifying Installation
 
 After installing dependencies, you can verify the installation:
@@ -757,10 +885,11 @@ The database health check:
 - ✅ Database dependency injection (US0.4-T4) - FastAPI dependency for database session management
 - ✅ Database health check endpoint (US0.4-T5) - `/health/db` endpoint with connection testing
 - ✅ Database initialization script (US0.4-T6) - Automated database setup with migration execution and verification
+- ✅ Database management scripts (US0.4-T7) - Makefile with commands for common database operations
 
 **Upcoming tasks:**
 
-- Continue database setup: management scripts, backup documentation (US0.4-T7 through US0.4-T9)
+- Continue database setup: backup documentation, environment config (US0.4-T8, US0.4-T9)
 - User authentication and authorization (US1.x)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.2-backend-development-environment-setup-tasks.md`
