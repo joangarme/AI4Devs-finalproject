@@ -57,7 +57,22 @@ Backend API for the Personal Finance Tracker application built with FastAPI.
    # The application will work with default values if .env is not present
    ```
 
-6. **Run the development server**:
+6. **Initialize the database**:
+
+   ```bash
+   # Run the database initialization script
+   python -m app.scripts.init_db
+   ```
+
+   This script will:
+   - Create the SQLite database file if it doesn't exist
+   - Run all pending Alembic migrations
+   - Verify the database connection
+   - Log all initialization steps
+
+   The script is idempotent and can be run multiple times safely.
+
+7. **Run the development server**:
 
    ```bash
    uvicorn app.main:app --reload
@@ -370,6 +385,92 @@ alembic current
 ls -la alembic/versions/
 ```
 
+### Database Initialization Script
+
+The project includes an automated database initialization script that simplifies database setup.
+
+#### What the Script Does
+
+The `init_db.py` script automates the entire database initialization process:
+
+1. **Checks database file status** - Reports if the database exists or will be created
+2. **Runs all pending migrations** - Applies all Alembic migrations to bring the database up to date
+3. **Verifies connection** - Tests the database connection and reports the current migration version
+4. **Logs all steps** - Provides detailed logging of the initialization process
+
+#### Usage
+
+**Run as a module (recommended):**
+
+```bash
+python -m app.scripts.init_db
+```
+
+**Run as a standalone script:**
+
+```bash
+python app/scripts/init_db.py
+```
+
+**Import and use in Python code:**
+
+```python
+from app.scripts.init_db import init_database
+
+# Initialize the database
+success = init_database()
+if success:
+    print("Database initialized successfully!")
+else:
+    print("Database initialization failed!")
+```
+
+#### Features
+
+- **Idempotent**: Safe to run multiple times - won't duplicate data or cause errors
+- **Error Handling**: Gracefully handles missing configuration files and connection failures
+- **Detailed Logging**: Provides clear feedback about each initialization step
+- **Flexible Execution**: Can be run as a module, script, or imported into other code
+
+#### When to Use
+
+- **First-time setup**: Initialize a new development environment
+- **After pulling new migrations**: Apply new schema changes from other developers
+- **Database reset**: After manually deleting the database file
+- **Deployment**: As part of application deployment to ensure database is ready
+
+#### Output Example
+
+```json
+{"timestamp": "2025-10-13T18:14:43.830009", "level": "INFO", "message": "============================================================"}
+{"timestamp": "2025-10-13T18:14:43.830058", "level": "INFO", "message": "Starting database initialization"}
+{"timestamp": "2025-10-13T18:14:43.830077", "level": "INFO", "message": "============================================================"}
+{"timestamp": "2025-10-13T18:14:43.830091", "level": "INFO", "message": "Step 1: Checking database file status..."}
+{"timestamp": "2025-10-13T18:14:43.830139", "level": "INFO", "message": "Database file will be created at /path/to/app.db"}
+{"timestamp": "2025-10-13T18:14:43.830152", "level": "INFO", "message": "Step 2: Running database migrations..."}
+{"timestamp": "2025-10-13T18:14:43.830164", "level": "INFO", "message": "Starting database migrations..."}
+```
+
+#### Error Handling
+
+The script handles common errors gracefully:
+
+- **Missing alembic.ini**: Reports the expected location and suggests running from the correct directory
+- **Database connection failures**: Logs the specific connection error for troubleshooting
+- **Migration failures**: Reports migration errors with full stack traces in the logs
+- **Unexpected errors**: Catches and logs any unexpected errors to prevent script crashes
+
+#### Testing
+
+Unit tests for the initialization script are located at:
+- `tests/unit/app/scripts/test_init_db.py`
+
+Run the tests with:
+
+```bash
+python -m pytest tests/unit/app/scripts/test_init_db.py -v
+```
+
 #### Verifying Installation
 
 After installing dependencies, you can verify the installation:
@@ -610,10 +711,11 @@ The FastAPI application currently includes:
 - ✅ Error handling (US0.2-T7) - Global exception handlers with consistent error responses
 - ✅ Database configuration module (US0.4-T2) - SQLAlchemy engine, session factory, and dependency injection
 - ✅ Initial database migration (US0.4-T3) - Alembic migration baseline established
+- ✅ Database initialization script (US0.4-T6) - Automated database setup with migration execution and verification
 
 **Upcoming tasks:**
 
-- Continue database setup: dependency injection, health check, management scripts (US0.4-T4 through US0.4-T9)
+- Continue database setup: health check endpoint, management scripts, backup documentation (US0.4-T4, T5, T7, T8, T9)
 - User authentication and authorization (US1.x)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.2-backend-development-environment-setup-tasks.md`
