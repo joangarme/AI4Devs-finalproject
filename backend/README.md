@@ -297,16 +297,32 @@ backend/
 - **Metadata Import**: Configured to import `Base` from `app.core.database` for autogenerate support
 - **Migration Tracking**: Uses `alembic_version` table in the database
 
-#### Initial Migration
+#### Available Migrations
 
-The initial migration has been created to establish the migration baseline:
+**1. Initial Migration** (`1f08170cdfb3`)
 
 - **Migration File**: `alembic/versions/1f08170cdfb3_initial_migration.py`
 - **Purpose**: Establishes the Alembic version tracking system
-- **Status**: Empty migration (no schema changes yet) - ready for future model additions
-- **Alembic Version Table**: Created in database to track migration state
+- **Status**: Applied - Ready for schema additions
 
-To apply the initial migration (if not already applied):
+**2. Users Table Migration** (`79a6bc168941`)
+
+- **Migration File**: `alembic/versions/79a6bc168941_create_users_table.py`
+- **Purpose**: Creates the `users` table for authentication
+- **Status**: Applied
+- **Table Schema**:
+  - `id` (INTEGER, Primary Key) - Auto-incrementing user ID
+  - `email` (VARCHAR(255), Unique, Not Null) - User email address
+  - `password_hash` (VARCHAR(60), Not Null) - Bcrypt password hash (60 chars)
+  - `created_at` (DATETIME, Not Null, Default: CURRENT_TIMESTAMP) - Account creation timestamp
+  - `updated_at` (DATETIME, Not Null, Default: CURRENT_TIMESTAMP) - Last update timestamp
+  - `is_active` (BOOLEAN, Not Null, Default: 1) - Account active status
+- **Constraints**:
+  - Unique constraint on `email` field (`uq_users_email`)
+  - Unique index on `email` field (`ix_users_email`) for faster lookups
+- **Reversibility**: Includes downgrade function to drop table and index
+
+To apply all migrations (if not already applied):
 
 ```bash
 alembic upgrade head
@@ -316,7 +332,7 @@ To verify the current migration status:
 
 ```bash
 alembic current
-# Output: 1f08170cdfb3 (head)
+# Output: 79a6bc168941 (head)
 ```
 
 #### Basic Alembic Commands
