@@ -65,6 +65,7 @@ Backend API for the Personal Finance Tracker application built with FastAPI.
    ```
 
    This script will:
+
    - Create the SQLite database file if it doesn't exist
    - Run all pending Alembic migrations
    - Verify the database connection
@@ -463,6 +464,7 @@ The script handles common errors gracefully:
 #### Testing
 
 Unit tests for the initialization script are located at:
+
 - `tests/unit/app/scripts/test_init_db.py`
 
 Run the tests with:
