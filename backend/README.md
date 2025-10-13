@@ -565,6 +565,7 @@ python -m pytest tests/integration/ -v
 The FastAPI application currently includes:
 
 - **GET /health** - Health check endpoint that returns API status
+- **GET /health/db** - Database health check endpoint that verifies database connectivity
 - **GET /docs** - Interactive API documentation (Swagger UI)
 - **GET /openapi.json** - OpenAPI specification in JSON format
 
@@ -579,6 +580,46 @@ The FastAPI application currently includes:
   "log_level": "INFO"
 }
 ```
+
+#### Database Health Check Endpoint Response
+
+The `/health/db` endpoint tests the actual database connection and returns detailed status information:
+
+**Successful connection (200 OK):**
+
+```json
+{
+  "status": "healthy",
+  "message": "Database connection is operational",
+  "database": {
+    "connected": true,
+    "query_time_seconds": 0.0023,
+    "database_url": "app.db"
+  }
+}
+```
+
+**Failed connection (503 Service Unavailable):**
+
+```json
+{
+  "status": "unhealthy",
+  "message": "Database connection failed",
+  "database": {
+    "connected": false,
+    "error": "unable to open database file"
+  }
+}
+```
+
+The database health check:
+
+- Executes a simple `SELECT 1` query to verify connectivity
+- Measures query execution time for performance monitoring
+- Returns 200 status code when database is accessible
+- Returns 503 status code when database is unavailable
+- Properly handles connection failures and provides detailed error information
+- Does not leak database connections (automatically closes sessions after each check)
 
 ### Troubleshooting
 
@@ -610,10 +651,12 @@ The FastAPI application currently includes:
 - ✅ Error handling (US0.2-T7) - Global exception handlers with consistent error responses
 - ✅ Database configuration module (US0.4-T2) - SQLAlchemy engine, session factory, and dependency injection
 - ✅ Initial database migration (US0.4-T3) - Alembic migration baseline established
+- ✅ Database dependency injection (US0.4-T4) - FastAPI dependency for database session management
+- ✅ Database health check endpoint (US0.4-T5) - `/health/db` endpoint with connection testing
 
 **Upcoming tasks:**
 
-- Continue database setup: dependency injection, health check, management scripts (US0.4-T4 through US0.4-T9)
+- Continue database setup: initialization script, management scripts, backup documentation (US0.4-T6 through US0.4-T9)
 - User authentication and authorization (US1.x)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.2-backend-development-environment-setup-tasks.md`
