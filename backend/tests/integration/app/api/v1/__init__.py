@@ -1,3 +1,1 @@
-"""
-Integration tests for API v1 endpoints.
-"""
+"""Integration tests for API v1 endpoints."""

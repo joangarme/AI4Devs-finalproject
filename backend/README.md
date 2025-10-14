@@ -1774,10 +1774,16 @@ python -m pytest tests/integration/ -v
 
 The FastAPI application currently includes:
 
+#### System Endpoints
+
 - **GET /health** - Health check endpoint that returns API status
 - **GET /health/db** - Database health check endpoint that verifies database connectivity
 - **GET /docs** - Interactive API documentation (Swagger UI)
 - **GET /openapi.json** - OpenAPI specification in JSON format
+
+#### Authentication Endpoints
+
+- **POST /api/v1/auth/register** - Register a new user account with email and password
 
 #### Health Endpoint Response
 
@@ -1831,6 +1837,102 @@ The database health check:
 - Properly handles connection failures and provides detailed error information
 - Does not leak database connections (automatically closes sessions after each check)
 
+#### User Registration Endpoint
+
+**Endpoint:** `POST /api/v1/auth/register`
+
+Register a new user account with email and password. Users are immediately active after registration (MVP: no email verification required).
+
+**Request Headers (Optional):**
+
+- `X-Request-ID` - Custom request ID for tracking (auto-generated if not provided)
+
+**Request Body:**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "SecurePass123!"
+}
+```
+
+**Password Requirements:**
+
+- Minimum 8 characters
+- At least 1 uppercase letter
+- At least 1 number
+- At least 1 special character (!@#$%^&\*(),.?":{}|<>)
+
+**Success Response (201 Created):**
+
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "created_at": "2025-10-14T12:00:00",
+  "is_active": true
+}
+```
+
+**Error Responses:**
+
+**400 Bad Request** - Validation error:
+
+```json
+{
+  "detail": "Invalid password: Password must contain at least one uppercase letter, Password must contain at least one number"
+}
+```
+
+**409 Conflict** - Email already registered:
+
+```json
+{
+  "detail": "User with email 'user@example.com' already exists"
+}
+```
+
+**422 Unprocessable Entity** - Invalid request format:
+
+```json
+{
+  "detail": [
+    {
+      "type": "value_error",
+      "loc": ["body", "email"],
+      "msg": "value is not a valid email address"
+    }
+  ]
+}
+```
+
+**500 Internal Server Error** - Server error:
+
+```json
+{
+  "detail": "Failed to create user"
+}
+```
+
+**Features:**
+
+- Email validation with RFC-compliant format checking
+- Duplicate email prevention (case-insensitive)
+- Password hashing with bcrypt (cost factor 12)
+- Comprehensive validation with specific error messages
+- Request ID logging for tracking and debugging
+- Transaction management with automatic rollback on errors
+- Passwords are never stored in plain text or returned in responses
+
+**Example cURL Request:**
+
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -H "X-Request-ID: custom-request-id-123" \
+  -d '{"email": "user@example.com", "password": "SecurePass123!"}'
+```
+
 ### Troubleshooting
 
 **Virtual environment not activating:**
@@ -1869,10 +1971,11 @@ The database health check:
 - ✅ Password validation service (US1.1-T3) - Comprehensive password validation with security requirements
 - ✅ Email validation service (US1.1-T4) - RFC-compliant email validation with duplicate checking
 - ✅ User registration service (US1.1-T5) - User creation with bcrypt hashing, validation, and transaction management
+- ✅ Registration API endpoint (US1.1-T6) - POST /api/v1/auth/register with comprehensive validation and error handling
 
 **Upcoming tasks:**
 
 - Continue database setup: backup documentation, environment config (US0.4-T8, US0.4-T9)
-- Registration API endpoint (US1.1-T6)
+- Frontend registration implementation (US1.1-T7, US1.1-T8, US1.1-T9)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.2-backend-development-environment-setup-tasks.md`
