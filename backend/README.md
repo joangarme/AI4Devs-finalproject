@@ -1043,12 +1043,12 @@ from app.core.exceptions import ValidationException
 def register_user(email: str, password: str):
     # Validate password
     errors = PasswordValidator.validate(password)
-    
+
     if errors:
         # Collect all error messages
         error_messages = [error.message for error in errors]
         raise ValidationException(", ".join(error_messages))
-    
+
     # Proceed with user registration
     # ...
 ```
@@ -1193,15 +1193,15 @@ from sqlalchemy.orm import Session
 def register_user(email: str, password: str, db: Session):
     # Validate email format and check for duplicates
     errors = EmailValidator.validate(email, db)
-    
+
     if errors:
         # Collect all error messages
         error_messages = [error.message for error in errors]
         raise ValidationException(", ".join(error_messages))
-    
+
     # Normalize email for storage
     normalized_email = EmailValidator.normalize_email(email)
-    
+
     # Proceed with user registration
     # ...
 ```
@@ -1211,6 +1211,7 @@ def register_user(email: str, password: str, db: Session):
 The validator accepts standard RFC-compliant email formats:
 
 **Valid examples:**
+
 - `user@example.com`
 - `user.name@example.com` - Dots in local part
 - `user+tag@example.com` - Plus addressing (email tags)
@@ -1220,6 +1221,7 @@ The validator accepts standard RFC-compliant email formats:
 - `user@example.co.uk` - Country TLDs
 
 **Invalid examples:**
+
 - `invalid-email` - Missing @ symbol
 - `user@` - Missing domain
 - `@example.com` - Missing local part
