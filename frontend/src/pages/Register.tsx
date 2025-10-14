@@ -9,31 +9,35 @@ const Register: React.FC = () => {
       email: data.email,
       password: '[REDACTED]',
     });
-    
+
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    
+
     alert(`Account created successfully for ${data.email}!`);
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Create Account</h1>
-          <p className="text-lg text-gray-600">Join us to start tracking your finances</p>
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 text-4xl font-bold text-gray-900">
+            Create Account
+          </h1>
+          <p className="text-lg text-gray-600">
+            Join us to start tracking your finances
+          </p>
         </div>
-        
-        <div className="bg-white shadow-lg rounded-lg p-8">
+
+        <div className="rounded-lg bg-white p-8 shadow-lg">
           <RegistrationForm onSubmit={handleRegistration} />
         </div>
-        
+
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
             <a
               href="/login"
-              className="font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus:underline"
+              className="font-medium text-blue-600 hover:text-blue-500 focus:underline focus:outline-none"
             >
               Sign in
             </a>

@@ -196,7 +196,7 @@ export const RegistrationForm = ({
           aria-required="true"
           aria-invalid={errors.email ? 'true' : 'false'}
           aria-describedby={errors.email ? 'email-error' : undefined}
-          className={`w-full rounded-md border px-4 py-2 text-gray-900 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 ${
+          className={`w-full rounded-md border px-4 py-2 text-gray-900 shadow-sm transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 ${
             errors.email
               ? 'border-red-500 focus:ring-red-500'
               : 'border-gray-300'
@@ -247,7 +247,7 @@ export const RegistrationForm = ({
                   ? 'password-strength'
                   : undefined
             }
-            className={`w-full rounded-md border px-4 py-2 pr-10 text-gray-900 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 ${
+            className={`w-full rounded-md border px-4 py-2 pr-10 text-gray-900 shadow-sm transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 ${
               errors.password
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300'
@@ -270,7 +270,7 @@ export const RegistrationForm = ({
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             disabled={isLoading}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:text-gray-400"
+            className="absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 py-1 text-sm text-gray-600 hover:text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:text-gray-400"
             aria-label={showPassword ? 'Hide password' : 'Show password'}
           >
             {showPassword ? (
@@ -356,7 +356,7 @@ export const RegistrationForm = ({
         {/* Password Requirements */}
         <div className="text-xs text-gray-600">
           <p>Password must contain:</p>
-          <ul className="ml-4 mt-1 list-disc space-y-1">
+          <ul className="mt-1 ml-4 list-disc space-y-1">
             <li>At least 8 characters</li>
             <li>One uppercase letter</li>
             <li>One lowercase letter</li>
@@ -388,7 +388,7 @@ export const RegistrationForm = ({
             aria-describedby={
               errors.confirmPassword ? 'confirm-password-error' : undefined
             }
-            className={`w-full rounded-md border px-4 py-2 pr-10 text-gray-900 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 ${
+            className={`w-full rounded-md border px-4 py-2 pr-10 text-gray-900 shadow-sm transition-colors focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500 ${
               errors.confirmPassword
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300'
@@ -401,10 +401,8 @@ export const RegistrationForm = ({
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             disabled={isLoading}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 text-sm text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:text-gray-400"
-            aria-label={
-              showConfirmPassword ? 'Hide password' : 'Show password'
-            }
+            className="absolute top-1/2 right-2 -translate-y-1/2 rounded px-2 py-1 text-sm text-gray-600 hover:text-gray-900 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:text-gray-400"
+            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
           >
             {showConfirmPassword ? (
               <svg
@@ -460,13 +458,13 @@ export const RegistrationForm = ({
       <button
         type="submit"
         disabled={isLoading || !isValid || !isDirty}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-white font-medium shadow-sm transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:bg-gray-400"
+        className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white shadow-sm transition-all hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:bg-gray-400"
         aria-label="Create account"
       >
         {isLoading ? (
           <span className="flex items-center justify-center">
             <svg
-              className="-ml-1 mr-3 h-5 w-5 animate-spin text-white"
+              className="mr-3 -ml-1 h-5 w-5 animate-spin text-white"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -497,4 +495,3 @@ export const RegistrationForm = ({
 };
 
 export default RegistrationForm;
-

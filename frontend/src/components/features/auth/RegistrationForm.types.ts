@@ -24,4 +24,3 @@ export interface RegistrationFormProps {
   onSubmit: (data: RegistrationFormData) => Promise<void>;
   isLoading?: boolean;
 }
-

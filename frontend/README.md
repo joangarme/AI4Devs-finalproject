@@ -526,7 +526,7 @@ const RegisterPage = () => {
 
   return (
     <div className="container">
-      <RegistrationForm 
+      <RegistrationForm
         onSubmit={handleRegistration}
         isLoading={false}
       />
@@ -537,10 +537,10 @@ const RegisterPage = () => {
 
 **Available Props:**
 
-| Prop        | Type                                           | Default | Description                          |
-| ----------- | ---------------------------------------------- | ------- | ------------------------------------ |
-| `onSubmit`  | `(data: RegistrationFormData) => Promise<void>` | required | Async handler for form submission   |
-| `isLoading` | `boolean`                                       | `false` | Controls loading state of submit btn |
+| Prop        | Type                                            | Default  | Description                          |
+| ----------- | ----------------------------------------------- | -------- | ------------------------------------ |
+| `onSubmit`  | `(data: RegistrationFormData) => Promise<void>` | required | Async handler for form submission    |
+| `isLoading` | `boolean`                                       | `false`  | Controls loading state of submit btn |
 
 **Form Data Interface:**
 
@@ -555,11 +555,12 @@ interface RegistrationFormData {
 **Password Validation Rules:**
 
 The form enforces the following password requirements:
+
 - Minimum 8 characters
 - At least 1 uppercase letter
 - At least 1 lowercase letter
 - At least 1 number
-- At least 1 special character (@$!%*?&)
+- At least 1 special character (@$!%\*?&)
 
 **Password Strength Levels:**
 
@@ -587,6 +588,7 @@ The form enforces the following password requirements:
 **Testing the Component:**
 
 Visit the registration page (`/register`) to see the form in action with:
+
 - Real-time email validation
 - Dynamic password strength indicator
 - Instant validation feedback
