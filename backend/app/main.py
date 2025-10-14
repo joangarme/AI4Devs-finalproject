@@ -17,6 +17,7 @@ from app.core.config import get_settings
 from app.core.exceptions import BaseAPIException
 from app.core.logging import get_logger
 from app.core.database import get_db
+from app.api.v1 import auth
 
 # Get application settings and logger
 settings = get_settings()
@@ -38,6 +39,14 @@ app.add_middleware(
     allow_methods=settings.cors_allow_methods,
     allow_headers=settings.cors_allow_headers,
 )
+
+
+# ============================================================
+# Router Registration
+# ============================================================
+
+# Register API routers
+app.include_router(auth.router, prefix="/api/v1")
 
 
 # ============================================================
