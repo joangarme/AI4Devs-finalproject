@@ -1861,7 +1861,7 @@ Register a new user account with email and password. Users are immediately activ
 - Minimum 8 characters
 - At least 1 uppercase letter
 - At least 1 number
-- At least 1 special character (!@#$%^&*(),.?":{}|<>)
+- At least 1 special character (!@#$%^&\*(),.?":{}|<>)
 
 **Success Response (201 Created):**
 
