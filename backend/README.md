@@ -151,7 +151,8 @@ backend/
 │   ├── models/          # Database models and ORM
 │   │   └── __init__.py
 │   ├── schemas/         # Pydantic models for validation
-│   │   └── __init__.py
+│   │   ├── __init__.py
+│   │   └── auth.py      # Authentication schemas (registration, login)
 │   └── services/        # Business logic services
 │       └── __init__.py
 ├── tests/               # Test files organized by type
@@ -170,7 +171,8 @@ backend/
 │   │       ├── models/
 │   │       │   └── __init__.py
 │   │       ├── schemas/
-│   │       │   └── __init__.py
+│   │       │   ├── __init__.py
+│   │       │   └── test_auth.py  # Authentication schema tests
 │   │       └── services/
 │   │           └── __init__.py
 │   └── integration/     # Tests with real components
@@ -198,6 +200,7 @@ The following core dependencies are installed and configured:
 - **Alembic 1.12.1** - Database migration tool for SQLAlchemy
 - **Pydantic 2.11.9** - Data validation and settings management (included with FastAPI)
 - **Pydantic-Settings 2.0.3** - Configuration management with environment variable support
+- **email-validator 2.3.0** - Email validation for Pydantic EmailStr type
 - **Pytest 7.4.3** - Testing framework for Python
 - **Pytest-Cov 4.1.0** - Coverage plugin for pytest
 - **HTTPX 0.25.2** - HTTP client for testing FastAPI applications
@@ -884,6 +887,89 @@ python -c "import pytest; print(f'Pytest version: {pytest.__version__}')"
 python -c "import httpx; print(f'HTTPX version: {httpx.__version__}')"
 ```
 
+### Pydantic Schemas
+
+The application uses Pydantic v2 for data validation and serialization. Pydantic models define the structure of API requests and responses, ensuring type safety and automatic validation.
+
+#### Schema Module Location
+
+Pydantic schemas are organized in `app/schemas/` with separate files for different domains:
+
+- **auth.py** - Authentication-related schemas (registration, login)
+
+#### Authentication Schemas
+
+The `app/schemas/auth.py` module provides request and response models for user authentication:
+
+**UserRegisterRequest**
+- Request model for user registration
+- Fields:
+  - `email` (EmailStr) - Validated email address
+  - `password` (SecretStr) - Password with minimum 8 character requirement
+- Security: Password is stored as SecretStr to prevent accidental exposure in logs
+
+**UserRegisterResponse**
+- Response model for successful registration
+- Fields:
+  - `id` (int) - Unique user identifier
+  - `email` (str) - User's email address
+  - `created_at` (datetime) - Account creation timestamp
+  - `is_active` (bool) - Account active status (defaults to True)
+- Security: Excludes sensitive data like password hashes
+- ORM Compatible: Can be created from SQLAlchemy models using `model_validate()`
+
+**UserLoginRequest**
+- Request model for user login
+- Fields:
+  - `email` (EmailStr) - User's email address
+  - `password` (SecretStr) - User's password
+- Security: Password stored as SecretStr
+
+#### Using Schemas in API Endpoints
+
+Schemas are used with FastAPI to automatically validate requests and serialize responses:
+
+```python
+from fastapi import APIRouter
+from app.schemas.auth import UserRegisterRequest, UserRegisterResponse
+
+router = APIRouter()
+
+@router.post("/auth/register", response_model=UserRegisterResponse, status_code=201)
+def register_user(request: UserRegisterRequest):
+    # FastAPI automatically validates the request body
+    # and ensures the response matches UserRegisterResponse
+    pass
+```
+
+#### Schema Features
+
+- **Type Validation**: Automatic validation of field types
+- **Email Validation**: RFC-compliant email validation using `email-validator` library
+- **SecretStr**: Prevents password exposure in logs and string representations
+- **Field Constraints**: Minimum length, format requirements, etc.
+- **ORM Compatibility**: Can be created from SQLAlchemy models with `from_attributes=True`
+- **JSON Serialization**: Automatic conversion to/from JSON
+- **Clear Documentation**: All schemas include docstrings and field descriptions
+
+#### Testing Schemas
+
+Comprehensive tests for schemas are located in `tests/unit/app/schemas/`:
+
+```bash
+# Run schema tests
+python -m pytest tests/unit/app/schemas/test_auth.py -v
+```
+
+Schema tests cover:
+- Valid data instantiation
+- Type validation and error handling
+- Email format validation
+- Password field validation
+- Serialization/deserialization
+- Security features (password exclusion from responses)
+- ORM compatibility
+
 ### Configuration Management
 
 The application uses Pydantic Settings for configuration management, supporting:
@@ -1045,6 +1131,7 @@ python -m pytest --cov=app --cov-report=term-missing
 python -m pytest tests/unit/app/core/test_config.py -v
 python -m pytest tests/unit/app/core/test_database.py -v
 python -m pytest tests/unit/app/core/test_exceptions.py -v
+python -m pytest tests/unit/app/schemas/test_auth.py -v
 python -m pytest tests/integration/app/test_main.py -v
 
 # Run error handling tests specifically
@@ -1062,6 +1149,7 @@ python -m pytest tests/integration/ -v
   - `test_database.py` - Database configuration and session management tests
   - `test_exceptions.py` - Custom exception classes tests
   - `test_logging.py` - Logging functionality tests
+  - `test_auth.py` - Authentication schema validation tests
 - **Integration Tests** (`tests/integration/`): Tests that verify multiple components working together, including API endpoints
   - `test_main.py` - FastAPI application tests including error handling
 - **Shared Fixtures** (`tests/conftest.py`): Common test fixtures and configuration used across all tests
@@ -1161,10 +1249,11 @@ The database health check:
 - ✅ Database health check endpoint (US0.4-T5) - `/health/db` endpoint with connection testing
 - ✅ Database initialization script (US0.4-T6) - Automated database setup with migration execution and verification
 - ✅ Database management scripts (US0.4-T7) - Makefile with commands for common database operations
+- ✅ User authentication Pydantic models (US1.1-T2) - Request/response schemas for registration and login
 
 **Upcoming tasks:**
 
 - Continue database setup: backup documentation, environment config (US0.4-T8, US0.4-T9)
-- User authentication and authorization (US1.x)
+- User authentication services and API endpoints (US1.1-T3+)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.2-backend-development-environment-setup-tasks.md`
