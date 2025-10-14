@@ -60,6 +60,7 @@ Backend API for the Personal Finance Tracker application built with FastAPI.
    ```
 
    Key database settings you can configure:
+
    - `DATABASE_URL` - Database connection URL (defaults to `sqlite:///./app.db`)
    - `DB_ECHO` - Enable SQLAlchemy SQL query logging (defaults to `false`)
 
@@ -816,16 +817,19 @@ For development environments, manual backups are sufficient. However, production
 **Production Backup Recommendations:**
 
 1. **Automated Backups**
+
    - Schedule daily backups using cron jobs or cloud provider tools
    - Keep multiple backup versions (e.g., last 7 daily, last 4 weekly, last 12 monthly)
    - Store backups in a separate location from the primary database
 
 2. **Cloud-Based Solutions**
+
    - Use cloud provider backup services (AWS RDS automated backups, Azure SQL Database backup, etc.)
    - Consider migrating from SQLite to PostgreSQL/MySQL for production
    - Implement point-in-time recovery capabilities
 
 3. **Backup Testing**
+
    - Regularly test backup restoration procedures
    - Verify backup integrity with automated checks
    - Document recovery time objectives (RTO) and recovery point objectives (RPO)
@@ -835,21 +839,21 @@ For development environments, manual backups are sufficient. However, production
    ```bash
    #!/bin/bash
    # backup_db.sh - Automated SQLite backup script
-   
+
    BACKUP_DIR="/path/to/backups"
    DB_FILE="/path/to/app.db"
    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
    BACKUP_FILE="${BACKUP_DIR}/app.db.backup.${TIMESTAMP}"
-   
+
    # Create backup
    cp "${DB_FILE}" "${BACKUP_FILE}"
-   
+
    # Compress backup
    gzip "${BACKUP_FILE}"
-   
+
    # Keep only last 30 days of backups
    find "${BACKUP_DIR}" -name "app.db.backup.*.gz" -mtime +30 -delete
-   
+
    # Log the backup
    echo "[${TIMESTAMP}] Backup created: ${BACKUP_FILE}.gz"
    ```
@@ -902,6 +906,7 @@ Pydantic schemas are organized in `app/schemas/` with separate files for differe
 The `app/schemas/auth.py` module provides request and response models for user authentication:
 
 **UserRegisterRequest**
+
 - Request model for user registration
 - Fields:
   - `email` (EmailStr) - Validated email address
@@ -909,6 +914,7 @@ The `app/schemas/auth.py` module provides request and response models for user a
 - Security: Password is stored as SecretStr to prevent accidental exposure in logs
 
 **UserRegisterResponse**
+
 - Response model for successful registration
 - Fields:
   - `id` (int) - Unique user identifier
@@ -919,6 +925,7 @@ The `app/schemas/auth.py` module provides request and response models for user a
 - ORM Compatible: Can be created from SQLAlchemy models using `model_validate()`
 
 **UserLoginRequest**
+
 - Request model for user login
 - Fields:
   - `email` (EmailStr) - User's email address
@@ -962,6 +969,7 @@ python -m pytest tests/unit/app/schemas/test_auth.py -v
 ```
 
 Schema tests cover:
+
 - Valid data instantiation
 - Type validation and error handling
 - Email format validation
