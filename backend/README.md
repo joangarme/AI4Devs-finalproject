@@ -978,6 +978,118 @@ Schema tests cover:
 - Security features (password exclusion from responses)
 - ORM compatibility
 
+### Password Validation Service
+
+The application includes a comprehensive password validation service that enforces security requirements for user passwords. The service is located in `app/services/password_validator.py` and is used during user registration.
+
+#### Password Requirements
+
+All passwords must meet the following security requirements:
+
+- **Minimum 8 characters** - Prevents weak, easily guessable passwords
+- **At least 1 uppercase letter** - Increases password complexity
+- **At least 1 number** - Adds numeric complexity
+- **At least 1 special character** - Requires symbols like `!@#$%^&*()`
+
+#### Using the Password Validator
+
+The `PasswordValidator` class provides two main methods:
+
+**validate(password: str) → List[PasswordValidationError]**
+
+Returns a list of validation errors. If the list is empty, the password is valid.
+
+```python
+from app.services.password_validator import PasswordValidator
+
+# Validate a password
+errors = PasswordValidator.validate("weak")
+
+if errors:
+    for error in errors:
+        print(f"{error.code}: {error.message}")
+else:
+    print("Password is valid!")
+```
+
+**is_valid(password: str) → bool**
+
+Returns `True` if the password meets all requirements, `False` otherwise.
+
+```python
+from app.services.password_validator import PasswordValidator
+
+if PasswordValidator.is_valid("MyP@ssw0rd"):
+    print("Password is valid!")
+else:
+    print("Password is invalid!")
+```
+
+#### Validation Error Codes
+
+Each validation error includes a code and a user-friendly message:
+
+- **min_length** - "Password must be at least 8 characters long"
+- **no_uppercase** - "Password must contain at least 1 uppercase letter"
+- **no_number** - "Password must contain at least 1 number"
+- **no_special_char** - "Password must contain at least 1 special character"
+
+#### Example Usage in Registration
+
+```python
+from app.services.password_validator import PasswordValidator
+from app.core.exceptions import ValidationException
+
+def register_user(email: str, password: str):
+    # Validate password
+    errors = PasswordValidator.validate(password)
+    
+    if errors:
+        # Collect all error messages
+        error_messages = [error.message for error in errors]
+        raise ValidationException(", ".join(error_messages))
+    
+    # Proceed with user registration
+    # ...
+```
+
+#### Accepted Special Characters
+
+The following special characters are accepted:
+
+```
+! @ # $ % ^ & * ( ) , . ? " : { } | < > _ - + = [ ] \ / ; ~ `
+```
+
+#### Testing Password Validation
+
+Comprehensive tests for the password validator are located in:
+
+```bash
+# Run password validator tests
+python -m pytest tests/unit/app/services/test_password_validator.py -v
+
+# Run with coverage
+python -m pytest tests/unit/app/services/test_password_validator.py --cov=app.services.password_validator --cov-report=term-missing
+```
+
+The test suite includes:
+
+- Individual validation rule tests
+- Boundary case tests (exactly 8 characters, etc.)
+- Valid password tests
+- Multiple validation failure tests
+- Error message accuracy tests
+- Edge case tests (unicode, whitespace, very long passwords)
+
+#### Implementation Details
+
+- **Regex-based validation** - Uses compiled regular expressions for efficient pattern matching
+- **List of errors** - Returns all validation failures, not just the first one
+- **User-friendly messages** - Clear, actionable error messages for users
+- **100% test coverage** - Comprehensive test suite ensures reliability
+- **Immutable validation** - Stateless validator class with class methods
+
 ### Configuration Management
 
 The application uses Pydantic Settings for configuration management, supporting:
@@ -1258,10 +1370,13 @@ The database health check:
 - ✅ Database initialization script (US0.4-T6) - Automated database setup with migration execution and verification
 - ✅ Database management scripts (US0.4-T7) - Makefile with commands for common database operations
 - ✅ User authentication Pydantic models (US1.1-T2) - Request/response schemas for registration and login
+- ✅ Password validation service (US1.1-T3) - Comprehensive password validation with security requirements
 
 **Upcoming tasks:**
 
 - Continue database setup: backup documentation, environment config (US0.4-T8, US0.4-T9)
-- User authentication services and API endpoints (US1.1-T3+)
+- Email validation service (US1.1-T4)
+- User registration service (US1.1-T5)
+- Registration API endpoint (US1.1-T6)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.2-backend-development-environment-setup-tasks.md`
