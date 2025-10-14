@@ -1308,11 +1308,11 @@ try:
         password="SecurePass1!"
     )
     print(f"User created: {user.email}, ID: {user.id}")
-    
+
 except UserAlreadyExistsError as e:
     # Handle duplicate email
     print(f"Email already registered: {e.email}")
-    
+
 except UserServiceError as e:
     # Handle validation errors
     print(f"Registration failed: {e.message}")
@@ -1347,38 +1347,38 @@ is_valid = UserService.verify_password(
 ```python
 class UserService:
     """Service for user management operations."""
-    
+
     BCRYPT_ROUNDS = 12  # Cost factor for bcrypt hashing
-    
+
     def __init__(self, db: Session):
         """Initialize with database session."""
-        
+
     def register_user(self, email: str, password: str) -> User:
         """
         Register a new user with email and password.
-        
+
         Validates email format and password strength, hashes password,
         creates user record in database, and sets user as active.
-        
+
         Args:
             email: User's email address
             password: User's plain text password
-            
+
         Returns:
             Created User object
-            
+
         Raises:
             UserServiceError: For validation errors (invalid email/password)
             UserAlreadyExistsError: If email already exists
             UserCreationError: If database operation fails
         """
-    
+
     def get_user_by_email(self, email: str) -> Optional[User]:
         """Retrieve user by email (case-insensitive)."""
-    
+
     def get_user_by_id(self, user_id: int) -> Optional[User]:
         """Retrieve user by ID."""
-    
+
     @staticmethod
     def verify_password(password: str, password_hash: str) -> bool:
         """Verify password against bcrypt hash."""
@@ -1390,11 +1390,11 @@ class UserService:
 class UserServiceError(Exception):
     """Base exception for user service errors."""
     # Attributes: message, code
-    
+
 class UserAlreadyExistsError(UserServiceError):
     """Raised when email already exists."""
     # Attributes: message, code, email
-    
+
 class UserCreationError(UserServiceError):
     """Raised when user creation fails."""
     # Attributes: message, code
@@ -1405,15 +1405,17 @@ class UserCreationError(UserServiceError):
 The user service enforces the following validation rules:
 
 **Email Validation** (via EmailValidator):
+
 - Valid RFC-compliant email format
 - No duplicate emails (case-insensitive)
 - Email normalized to lowercase before storage
 
 **Password Validation** (via PasswordValidator):
+
 - Minimum 8 characters
 - At least 1 uppercase letter
 - At least 1 number
-- At least 1 special character (!@#$%^&*(),.?":{}|<>_-+=[]\/;~`)
+- At least 1 special character (!@#$%^&\*(),.?":{}|<>\_-+=[]\/;~`)
 
 #### Password Hashing
 
@@ -1425,6 +1427,7 @@ The service uses bcrypt with the following configuration:
 - **Output**: 60-character hash stored in database
 
 **Security Features:**
+
 - Each password gets a unique salt
 - Hash includes algorithm version, cost, salt, and encrypted password
 - Hashes are safe to store directly in database
@@ -1468,6 +1471,7 @@ python -m pytest tests/unit/app/services/test_user_service.py tests/integration/
 ```
 
 **Unit Test Coverage (28 tests):**
+
 - Exception class initialization and behavior
 - Password hashing and verification
 - User service initialization
@@ -1477,6 +1481,7 @@ python -m pytest tests/unit/app/services/test_user_service.py tests/integration/
 - User retrieval methods
 
 **Integration Test Coverage (17 tests):**
+
 - User registration with real database
 - Password hashing in database
 - Active status verification
@@ -1488,6 +1493,7 @@ python -m pytest tests/unit/app/services/test_user_service.py tests/integration/
 - Timestamp verification
 
 **Test Results:**
+
 - 45 tests total (28 unit + 17 integration)
 - 100% code coverage on user_service.py (65 statements)
 - 75% code coverage on user.py (20 statements)
@@ -1506,22 +1512,26 @@ python -m pytest tests/unit/app/services/test_user_service.py tests/integration/
 #### Security Considerations
 
 1. **Password Security**:
+
    - Never stores passwords in plain text
    - Uses bcrypt with 12 rounds (strong but performant)
    - Each password gets unique salt
    - Verification is timing-attack resistant
 
 2. **SQL Injection Prevention**:
+
    - Uses SQLAlchemy ORM (not raw SQL)
    - Parameterized queries in validators
    - Safe database operations throughout
 
 3. **Transaction Integrity**:
+
    - Automatic rollback on errors
    - No partial data commits
    - Database constraints enforced
 
 4. **Error Messages**:
+
    - Clear feedback without exposing internals
    - Specific error codes for different failures
    - No information leakage about existing users
@@ -1538,9 +1548,9 @@ The User model is defined in `app/models/user.py`:
 ```python
 class User(Base):
     """User model for authentication and user management."""
-    
+
     __tablename__ = "users"
-    
+
     id: int                    # Primary key
     email: str                 # Unique, indexed, lowercase
     password_hash: str         # Bcrypt hash (60 characters)
@@ -1550,6 +1560,7 @@ class User(Base):
 ```
 
 **Database Schema:**
+
 - `id` - Integer primary key with auto-increment
 - `email` - VARCHAR(255), unique constraint, indexed
 - `password_hash` - VARCHAR(60), bcrypt format
