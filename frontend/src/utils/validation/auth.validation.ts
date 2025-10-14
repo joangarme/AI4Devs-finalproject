@@ -55,8 +55,8 @@ export const passwordSchema = z
     'Password must contain at least 1 number'
   )
   .refine(
-    (password) => /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/;~`]/.test(password),
-    'Password must contain at least 1 special character (!@#$%^&*(),.?":{}|<>_-+=[]\\\/;~`)'
+    (password) => /[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/;~`]/.test(password),
+    'Password must contain at least 1 special character (!@#$%^&*(),.?":{}|<>_-+=[]\\/;~`)'
   );
 
 /**
@@ -92,7 +92,7 @@ export const PASSWORD_REQUIREMENTS = [
   'One uppercase letter',
   'One lowercase letter',
   'One number',
-  'One special character (!@#$%^&*(),.?":{}|<>_-+=[]\\\/;~`)',
+  'One special character (!@#$%^&*(),.?":{}|<>_-+=[]\\/;~`)',
 ] as const;
 
 /**
@@ -104,5 +104,5 @@ export const checkPasswordRequirements = (password: string) => ({
   hasUppercase: /[A-Z]/.test(password),
   hasLowercase: /[a-z]/.test(password),
   hasNumber: /[0-9]/.test(password),
-  hasSpecialChar: /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/;~`]/.test(password),
+  hasSpecialChar: /[!@#$%^&*(),.?":{}|<>_\-+=[\]\\/;~`]/.test(password),
 });
