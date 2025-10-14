@@ -638,7 +638,7 @@ const registrationMutation = useMutation({
       email: data.email,
       is_active: data.is_active,
     });
-    
+
     // Redirect to dashboard
     navigate('/dashboard');
   },

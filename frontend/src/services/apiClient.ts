@@ -130,7 +130,10 @@ export const getFieldErrors = (
   error: unknown
 ): Record<string, string> | null => {
   if (axios.isAxiosError(error)) {
-    if (error.response?.data?.detail && Array.isArray(error.response.data.detail)) {
+    if (
+      error.response?.data?.detail &&
+      Array.isArray(error.response.data.detail)
+    ) {
       const fieldErrors: Record<string, string> = {};
       error.response.data.detail.forEach((err: ValidationErrorDetail) => {
         if (err.loc && err.loc.length > 1) {
@@ -143,4 +146,3 @@ export const getFieldErrors = (
   }
   return null;
 };
-

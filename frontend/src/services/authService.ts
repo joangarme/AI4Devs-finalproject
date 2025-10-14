@@ -48,7 +48,10 @@ export const authService = {
    * Register a new user
    */
   register: async (data: RegisterRequest): Promise<RegisterResponse> => {
-    const response = await apiClient.post<RegisterResponse>('/auth/register', data);
+    const response = await apiClient.post<RegisterResponse>(
+      '/auth/register',
+      data
+    );
     return response.data;
   },
 
@@ -109,4 +112,3 @@ export const authService = {
     return !!authService.getAuthToken();
   },
 };
-

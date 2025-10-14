@@ -141,7 +141,9 @@ const Register: React.FC = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-                <p className="text-sm font-medium text-red-800">{generalError}</p>
+                <p className="text-sm font-medium text-red-800">
+                  {generalError}
+                </p>
               </div>
             </div>
           )}
@@ -168,9 +170,7 @@ const Register: React.FC = () => {
         {/* Loading overlay when redirecting */}
         {successMessage && (
           <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
-              Redirecting to dashboard...
-            </p>
+            <p className="text-sm text-gray-600">Redirecting to dashboard...</p>
           </div>
         )}
       </div>
