@@ -482,6 +482,119 @@ To add new components to the library:
 3. Export from `components/common/index.ts`
 4. Component is automatically available through `components/index.ts`
 
+#### RegistrationForm Component
+
+The `RegistrationForm` component is a comprehensive, production-ready registration form with advanced features:
+
+**Features:**
+
+- **Form Fields**: Email, password, and confirm password inputs
+- **Password Strength Indicator**: Real-time password strength analysis using zxcvbn
+- **Form Validation**: React Hook Form integration with real-time validation
+- **Debounced Validation**: 300ms debounce for improved performance
+- **Loading States**: Built-in loading state with spinner animation
+- **Accessibility**: Full ARIA attributes and keyboard navigation support
+- **Show/Hide Password**: Toggle visibility for password fields
+- **Error Messages**: Clear, user-friendly error messages for all validation failures
+- **Password Requirements**: Visual display of password rules
+- **TypeScript**: Fully typed with comprehensive interfaces
+- **Responsive Design**: Mobile-first design with Tailwind CSS
+
+**Component Structure:**
+
+```
+components/features/auth/
+├── RegistrationForm.tsx          # Component implementation
+├── RegistrationForm.types.ts     # TypeScript interfaces
+└── index.ts                       # Exports
+```
+
+**Usage Example:**
+
+```typescript
+import { RegistrationForm } from '@/components/features/auth';
+import type { RegistrationFormData } from '@/components/features/auth/RegistrationForm.types';
+
+const RegisterPage = () => {
+  const handleRegistration = async (data: RegistrationFormData) => {
+    // Call your API here
+    await registerUser({
+      email: data.email,
+      password: data.password,
+    });
+  };
+
+  return (
+    <div className="container">
+      <RegistrationForm
+        onSubmit={handleRegistration}
+        isLoading={false}
+      />
+    </div>
+  );
+};
+```
+
+**Available Props:**
+
+| Prop        | Type                                            | Default  | Description                          |
+| ----------- | ----------------------------------------------- | -------- | ------------------------------------ |
+| `onSubmit`  | `(data: RegistrationFormData) => Promise<void>` | required | Async handler for form submission    |
+| `isLoading` | `boolean`                                       | `false`  | Controls loading state of submit btn |
+
+**Form Data Interface:**
+
+```typescript
+interface RegistrationFormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+```
+
+**Password Validation Rules:**
+
+The form enforces the following password requirements:
+
+- Minimum 8 characters
+- At least 1 uppercase letter
+- At least 1 lowercase letter
+- At least 1 number
+- At least 1 special character (@$!%\*?&)
+
+**Password Strength Levels:**
+
+- **Too weak** (score 0): Red indicator
+- **Weak** (score 1): Orange indicator
+- **Fair** (score 2): Yellow indicator
+- **Good** (score 3): Blue indicator
+- **Strong** (score 4): Green indicator
+
+**Accessibility Features:**
+
+- Proper ARIA labels and descriptions for all form fields
+- ARIA live regions for real-time validation feedback
+- Keyboard navigation support
+- Screen reader friendly error messages
+- Semantic HTML with proper form structure
+- Focus management and visible focus indicators
+
+**Dependencies:**
+
+- `react-hook-form@7.64.0` - Form state management and validation
+- `zxcvbn@4.6.0` - Password strength calculation
+- `@types/zxcvbn@4.4.5` - TypeScript types for zxcvbn
+
+**Testing the Component:**
+
+Visit the registration page (`/register`) to see the form in action with:
+
+- Real-time email validation
+- Dynamic password strength indicator
+- Instant validation feedback
+- Loading state simulation
+- Accessible form interactions
+
 ### API Integration
 
 The frontend is designed to integrate with the backend API:
