@@ -584,6 +584,8 @@ The form enforces the following password requirements:
 - `react-hook-form@7.64.0` - Form state management and validation
 - `zxcvbn@4.6.0` - Password strength calculation
 - `@types/zxcvbn@4.4.5` - TypeScript types for zxcvbn
+- `zod@latest` - Schema validation library
+- `@hookform/resolvers@latest` - React Hook Form resolvers for Zod
 
 **Testing the Component:**
 
@@ -594,6 +596,206 @@ Visit the registration page (`/register`) to see the form in action with:
 - Instant validation feedback
 - Loading state simulation
 - Accessible form interactions
+
+### Form Validation Schema
+
+The frontend uses **Zod** for type-safe form validation that matches backend requirements exactly.
+
+#### Validation Architecture
+
+The validation system is centralized in `src/utils/validation/` for consistency and maintainability:
+
+```
+src/utils/validation/
+├── auth.validation.ts    # Authentication form schemas
+└── index.ts              # Exports
+```
+
+#### Backend Consistency
+
+All validation rules are designed to match backend validators exactly:
+
+| Frontend Schema      | Backend Validator                    | File Path                                    |
+| -------------------- | ------------------------------------ | -------------------------------------------- |
+| `emailSchema`        | `EmailValidator`                     | `backend/app/services/email_validator.py`    |
+| `passwordSchema`     | `PasswordValidator`                  | `backend/app/services/password_validator.py` |
+| `registrationSchema` | Combined email + password validation | Used by `UserService.register_user()`        |
+
+#### Email Validation
+
+Matches backend `EmailValidator` requirements:
+
+```typescript
+import { emailSchema } from '@/utils/validation';
+
+// Backend requirements:
+// - Cannot be empty → "Email address cannot be empty"
+// - Must be RFC-compliant → "Email address is not valid"
+
+const result = emailSchema.safeParse('user@example.com');
+if (!result.success) {
+  console.error(result.error.errors);
+}
+```
+
+**Validation Rules:**
+
+- ✅ Non-empty email address required
+- ✅ RFC-compliant email format
+- ✅ Case-insensitive (normalized to lowercase on backend)
+
+#### Password Validation
+
+Matches backend `PasswordValidator` requirements **exactly**:
+
+```typescript
+import {
+  passwordSchema,
+  PASSWORD_REQUIREMENTS,
+  checkPasswordRequirements,
+} from '@/utils/validation';
+
+// Backend requirements (exact match):
+// - MIN_LENGTH = 8
+// - UPPERCASE_PATTERN = r'[A-Z]'
+// - NUMBER_PATTERN = r'[0-9]'
+// - SPECIAL_CHAR_PATTERN = r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/;~`]'
+
+const result = passwordSchema.safeParse('MyPass123!');
+```
+
+**Validation Rules (Backend-Aligned):**
+
+- ✅ Minimum 8 characters → "Password must be at least 8 characters long"
+- ✅ At least 1 uppercase letter → "Password must contain at least 1 uppercase letter"
+- ✅ At least 1 number → "Password must contain at least 1 number"
+- ✅ At least 1 special character → "Password must contain at least 1 special character (!@#$%^&\*(),.?\":{}|<>\_-+=[]\\\/;~`)"
+
+**Special Characters (Backend-Aligned):**
+
+```
+! @ # $ % ^ & * ( ) , . ? " : { } | < > _ - + = [ ] \ / ; ~ `
+```
+
+**Helper Function for UI Feedback:**
+
+```typescript
+import { checkPasswordRequirements } from '@/utils/validation';
+
+const requirements = checkPasswordRequirements('MyPass123!');
+// Returns:
+// {
+//   minLength: true,
+//   hasUppercase: true,
+//   hasLowercase: true,
+//   hasNumber: true,
+//   hasSpecialChar: true
+// }
+```
+
+#### Registration Form Schema
+
+Complete schema for user registration:
+
+```typescript
+import { registrationSchema } from '@/utils/validation';
+import type { RegistrationFormData } from '@/utils/validation';
+
+// Type-safe form data
+const data: RegistrationFormData = {
+  email: 'user@example.com',
+  password: 'SecurePass123!',
+  confirmPassword: 'SecurePass123!',
+};
+
+const result = registrationSchema.safeParse(data);
+```
+
+**Validation Rules:**
+
+- ✅ Email must pass email validation
+- ✅ Password must pass password validation
+- ✅ Confirm password must match password → "Passwords do not match"
+
+#### Integration with React Hook Form
+
+The validation schemas integrate seamlessly with React Hook Form using `zodResolver`:
+
+```typescript
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { registrationSchema, type RegistrationFormData } from '@/utils/validation';
+
+const MyForm = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm<RegistrationFormData>({
+    resolver: zodResolver(registrationSchema),
+    mode: 'onChange', // Real-time validation
+  });
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('email')} />
+      {errors.email && <span>{errors.email.message}</span>}
+
+      <input type="password" {...register('password')} />
+      {errors.password && <span>{errors.password.message}</span>}
+
+      <button type="submit">Register</button>
+    </form>
+  );
+};
+```
+
+#### Error Messages
+
+All error messages match backend validators exactly for consistent user experience:
+
+| Field            | Error Condition | Frontend Message                                                         | Backend Message                                     |
+| ---------------- | --------------- | ------------------------------------------------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------ | ------------------ |
+| Email            | Empty           | "Email address cannot be empty"                                          | "Email address cannot be empty"                     |
+| Email            | Invalid format  | "Email address is not valid"                                             | "Email address is not valid"                        |
+| Password         | Too short       | "Password must be at least 8 characters long"                            | "Password must be at least 8 characters long"       |
+| Password         | No uppercase    | "Password must contain at least 1 uppercase letter"                      | "Password must contain at least 1 uppercase letter" |
+| Password         | No number       | "Password must contain at least 1 number"                                | "Password must contain at least 1 number"           |
+| Password         | No special char | "Password must contain at least 1 special character (!@#$%^&\*(),.?\":{} | <>\_-+=[]\\\/;~`)"                                  | "Password must contain at least 1 special character (!@#$%^&\*(),.?\":{} | <>\_-+=[]\\\/;~`)" |
+| Confirm Password | Empty           | "Please confirm your password"                                           | N/A (frontend only)                                 |
+| Confirm Password | Mismatch        | "Passwords do not match"                                                 | N/A (frontend only)                                 |
+
+#### Benefits of Zod Validation
+
+1. **Type Safety**: TypeScript types inferred from schemas
+2. **Backend Consistency**: Validation rules match backend exactly
+3. **Clear Error Messages**: User-friendly, specific error messages
+4. **Maintainability**: Centralized validation logic
+5. **Composability**: Schemas can be combined and reused
+6. **Integration**: Works seamlessly with React Hook Form
+
+#### Validation Best Practices
+
+1. **Always validate on both frontend and backend**
+   - Frontend: Better UX with immediate feedback
+   - Backend: Security and data integrity
+
+2. **Keep validation rules synchronized**
+   - Frontend schemas match backend validators
+   - Error messages are identical
+   - Special character sets are aligned
+
+3. **Use TypeScript types from schemas**
+
+   ```typescript
+   import type { RegistrationFormData } from '@/utils/validation';
+   // Type is automatically inferred from Zod schema
+   ```
+
+4. **Leverage Zod's composition**
+   ```typescript
+   // Reuse schemas in multiple forms
+   const loginSchema = z.object({
+     email: emailSchema,
+     password: z.string().min(1, 'Password is required'),
+   });
+   ```
 
 ### API Integration
 

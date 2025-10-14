@@ -14,6 +14,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.90.2",
     "@types/zxcvbn": "^4.4.5",
     "axios": "^1.12.2",
@@ -21,6 +22,7 @@
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.64.0",
     "react-router-dom": "^6.30.1",
+    "zod": "^4.1.12",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
