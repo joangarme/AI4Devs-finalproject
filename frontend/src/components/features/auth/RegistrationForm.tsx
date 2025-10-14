@@ -1,13 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import zxcvbn from 'zxcvbn';
-
-// Form data interface
-interface RegistrationFormData {
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+import {
+  registrationSchema,
+  PASSWORD_REQUIREMENTS,
+  type RegistrationFormData,
+} from '../../../utils/validation';
 
 // Password strength levels
 type PasswordStrength = {
@@ -56,6 +55,7 @@ export const RegistrationForm = ({
     setError,
     clearErrors,
   } = useForm<RegistrationFormData>({
+    resolver: zodResolver(registrationSchema),
     mode: 'onChange',
     defaultValues: {
       email: '',
@@ -201,13 +201,7 @@ export const RegistrationForm = ({
               ? 'border-red-500 focus:ring-red-500'
               : 'border-gray-300'
           }`}
-          {...register('email', {
-            required: 'Email is required',
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: 'Invalid email address',
-            },
-          })}
+          {...register('email')}
         />
         {errors.email && (
           <p
@@ -252,19 +246,7 @@ export const RegistrationForm = ({
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300'
             }`}
-            {...register('password', {
-              required: 'Password is required',
-              minLength: {
-                value: 8,
-                message: 'Password must be at least 8 characters',
-              },
-              pattern: {
-                value:
-                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-                message:
-                  'Password must contain uppercase, lowercase, number, and special character',
-              },
-            })}
+            {...register('password')}
           />
           <button
             type="button"
@@ -357,11 +339,9 @@ export const RegistrationForm = ({
         <div className="text-xs text-gray-600">
           <p>Password must contain:</p>
           <ul className="mt-1 ml-4 list-disc space-y-1">
-            <li>At least 8 characters</li>
-            <li>One uppercase letter</li>
-            <li>One lowercase letter</li>
-            <li>One number</li>
-            <li>One special character (@$!%*?&)</li>
+            {PASSWORD_REQUIREMENTS.map((requirement, index) => (
+              <li key={index}>{requirement}</li>
+            ))}
           </ul>
         </div>
       </div>
@@ -393,9 +373,7 @@ export const RegistrationForm = ({
                 ? 'border-red-500 focus:ring-red-500'
                 : 'border-gray-300'
             }`}
-            {...register('confirmPassword', {
-              required: 'Please confirm your password',
-            })}
+            {...register('confirmPassword')}
           />
           <button
             type="button"
