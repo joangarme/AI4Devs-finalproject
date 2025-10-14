@@ -615,11 +615,11 @@ src/utils/validation/
 
 All validation rules are designed to match backend validators exactly:
 
-| Frontend Schema     | Backend Validator              | File Path                                 |
-| ------------------- | ------------------------------ | ----------------------------------------- |
-| `emailSchema`       | `EmailValidator`               | `backend/app/services/email_validator.py` |
-| `passwordSchema`    | `PasswordValidator`            | `backend/app/services/password_validator.py` |
-| `registrationSchema`| Combined email + password validation | Used by `UserService.register_user()` |
+| Frontend Schema      | Backend Validator                    | File Path                                    |
+| -------------------- | ------------------------------------ | -------------------------------------------- |
+| `emailSchema`        | `EmailValidator`                     | `backend/app/services/email_validator.py`    |
+| `passwordSchema`     | `PasswordValidator`                  | `backend/app/services/password_validator.py` |
+| `registrationSchema` | Combined email + password validation | Used by `UserService.register_user()`        |
 
 #### Email Validation
 
@@ -639,6 +639,7 @@ if (!result.success) {
 ```
 
 **Validation Rules:**
+
 - ✅ Non-empty email address required
 - ✅ RFC-compliant email format
 - ✅ Case-insensitive (normalized to lowercase on backend)
@@ -648,7 +649,11 @@ if (!result.success) {
 Matches backend `PasswordValidator` requirements **exactly**:
 
 ```typescript
-import { passwordSchema, PASSWORD_REQUIREMENTS, checkPasswordRequirements } from '@/utils/validation';
+import {
+  passwordSchema,
+  PASSWORD_REQUIREMENTS,
+  checkPasswordRequirements,
+} from '@/utils/validation';
 
 // Backend requirements (exact match):
 // - MIN_LENGTH = 8
@@ -660,12 +665,14 @@ const result = passwordSchema.safeParse('MyPass123!');
 ```
 
 **Validation Rules (Backend-Aligned):**
+
 - ✅ Minimum 8 characters → "Password must be at least 8 characters long"
 - ✅ At least 1 uppercase letter → "Password must contain at least 1 uppercase letter"
 - ✅ At least 1 number → "Password must contain at least 1 number"
-- ✅ At least 1 special character → "Password must contain at least 1 special character (!@#$%^&*(),.?\":{}|<>_-+=[]\\\/;~`)"
+- ✅ At least 1 special character → "Password must contain at least 1 special character (!@#$%^&\*(),.?\":{}|<>\_-+=[]\\\/;~`)"
 
 **Special Characters (Backend-Aligned):**
+
 ```
 ! @ # $ % ^ & * ( ) , . ? " : { } | < > _ - + = [ ] \ / ; ~ `
 ```
@@ -698,13 +705,14 @@ import type { RegistrationFormData } from '@/utils/validation';
 const data: RegistrationFormData = {
   email: 'user@example.com',
   password: 'SecurePass123!',
-  confirmPassword: 'SecurePass123!'
+  confirmPassword: 'SecurePass123!',
 };
 
 const result = registrationSchema.safeParse(data);
 ```
 
 **Validation Rules:**
+
 - ✅ Email must pass email validation
 - ✅ Password must pass password validation
 - ✅ Confirm password must match password → "Passwords do not match"
@@ -728,10 +736,10 @@ const MyForm = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <input {...register('email')} />
       {errors.email && <span>{errors.email.message}</span>}
-      
+
       <input type="password" {...register('password')} />
       {errors.password && <span>{errors.password.message}</span>}
-      
+
       <button type="submit">Register</button>
     </form>
   );
@@ -742,16 +750,16 @@ const MyForm = () => {
 
 All error messages match backend validators exactly for consistent user experience:
 
-| Field | Error Condition | Frontend Message | Backend Message |
-|-------|----------------|------------------|-----------------|
-| Email | Empty | "Email address cannot be empty" | "Email address cannot be empty" |
-| Email | Invalid format | "Email address is not valid" | "Email address is not valid" |
-| Password | Too short | "Password must be at least 8 characters long" | "Password must be at least 8 characters long" |
-| Password | No uppercase | "Password must contain at least 1 uppercase letter" | "Password must contain at least 1 uppercase letter" |
-| Password | No number | "Password must contain at least 1 number" | "Password must contain at least 1 number" |
-| Password | No special char | "Password must contain at least 1 special character (!@#$%^&*(),.?\":{}|<>_-+=[]\\\/;~`)" | "Password must contain at least 1 special character (!@#$%^&*(),.?\":{}|<>_-+=[]\\\/;~`)" |
-| Confirm Password | Empty | "Please confirm your password" | N/A (frontend only) |
-| Confirm Password | Mismatch | "Passwords do not match" | N/A (frontend only) |
+| Field            | Error Condition | Frontend Message                                                         | Backend Message                                     |
+| ---------------- | --------------- | ------------------------------------------------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------ | ------------------ |
+| Email            | Empty           | "Email address cannot be empty"                                          | "Email address cannot be empty"                     |
+| Email            | Invalid format  | "Email address is not valid"                                             | "Email address is not valid"                        |
+| Password         | Too short       | "Password must be at least 8 characters long"                            | "Password must be at least 8 characters long"       |
+| Password         | No uppercase    | "Password must contain at least 1 uppercase letter"                      | "Password must contain at least 1 uppercase letter" |
+| Password         | No number       | "Password must contain at least 1 number"                                | "Password must contain at least 1 number"           |
+| Password         | No special char | "Password must contain at least 1 special character (!@#$%^&\*(),.?\":{} | <>\_-+=[]\\\/;~`)"                                  | "Password must contain at least 1 special character (!@#$%^&\*(),.?\":{} | <>\_-+=[]\\\/;~`)" |
+| Confirm Password | Empty           | "Please confirm your password"                                           | N/A (frontend only)                                 |
+| Confirm Password | Mismatch        | "Passwords do not match"                                                 | N/A (frontend only)                                 |
 
 #### Benefits of Zod Validation
 
@@ -774,6 +782,7 @@ All error messages match backend validators exactly for consistent user experien
    - Special character sets are aligned
 
 3. **Use TypeScript types from schemas**
+
    ```typescript
    import type { RegistrationFormData } from '@/utils/validation';
    // Type is automatically inferred from Zod schema
@@ -784,7 +793,7 @@ All error messages match backend validators exactly for consistent user experien
    // Reuse schemas in multiple forms
    const loginSchema = z.object({
      email: emailSchema,
-     password: z.string().min(1, 'Password is required')
+     password: z.string().min(1, 'Password is required'),
    });
    ```
 

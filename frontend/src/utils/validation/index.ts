@@ -1,6 +1,6 @@
 /**
  * Validation utilities
- * 
+ *
  * Centralized validation schemas and helpers for form validation.
  */
 
@@ -12,4 +12,3 @@ export {
   checkPasswordRequirements,
   type RegistrationFormData,
 } from './auth.validation';
-

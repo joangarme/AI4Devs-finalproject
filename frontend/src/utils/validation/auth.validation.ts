@@ -1,9 +1,9 @@
 /**
  * Authentication Validation Schemas
- * 
+ *
  * Provides Zod validation schemas for authentication forms that match
  * backend validation requirements exactly.
- * 
+ *
  * Backend References:
  * - EmailValidator: backend/app/services/email_validator.py
  * - PasswordValidator: backend/app/services/password_validator.py
@@ -13,12 +13,12 @@ import { z } from 'zod';
 
 /**
  * Email validation schema matching backend EmailValidator
- * 
+ *
  * Backend requirements:
  * - Cannot be empty
  * - Must be a valid RFC-compliant email format
  * - Case-insensitive (normalized to lowercase)
- * 
+ *
  * Backend error messages:
  * - "Email address cannot be empty"
  * - "Email address is not valid"
@@ -30,13 +30,13 @@ export const emailSchema = z
 
 /**
  * Password validation schema matching backend PasswordValidator
- * 
+ *
  * Backend requirements:
  * - Minimum 8 characters (MIN_LENGTH = 8)
  * - At least 1 uppercase letter (UPPERCASE_PATTERN = r'[A-Z]')
  * - At least 1 number (NUMBER_PATTERN = r'[0-9]')
  * - At least 1 special character from: !@#$%^&*(),.?":{}|<>_-+=[]\/;~`
- * 
+ *
  * Backend error messages (exact match):
  * - "Password must be at least 8 characters long"
  * - "Password must contain at least 1 uppercase letter"
@@ -61,7 +61,7 @@ export const passwordSchema = z
 
 /**
  * Registration form validation schema
- * 
+ *
  * Validates:
  * - email: Must be valid RFC-compliant email
  * - password: Must meet all password requirements
@@ -106,4 +106,3 @@ export const checkPasswordRequirements = (password: string) => ({
   hasNumber: /[0-9]/.test(password),
   hasSpecialChar: /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/;~`]/.test(password),
 });
-
