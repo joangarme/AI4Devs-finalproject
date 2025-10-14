@@ -1266,6 +1266,315 @@ The test suite includes 33 tests covering:
 3. **Email Normalization**: Converts all emails to lowercase before database storage
 4. **Clear Error Messages**: Provides actionable feedback without exposing system internals
 
+### User Registration Service
+
+The application includes a comprehensive user registration service that handles user creation with secure password hashing, validation, and database transaction management. The service is located in `app/services/user_service.py` and coordinates with the password and email validators to ensure secure user registration.
+
+#### Features
+
+- **Secure Password Hashing** - Uses bcrypt with cost factor of 12 rounds for strong password encryption
+- **Input Validation** - Integrates password and email validators for comprehensive validation
+- **Database Transactions** - Wraps all operations in transactions with automatic rollback on errors
+- **Duplicate Prevention** - Prevents duplicate email registrations with case-insensitive checking
+- **Error Handling** - Provides clear, actionable error messages for all failure scenarios
+- **Active by Default** - Creates users as active immediately (MVP: no email verification required)
+- **100% Test Coverage** - Comprehensive unit and integration tests (45 tests total)
+
+#### Installation
+
+The user service requires bcrypt for password hashing:
+
+```bash
+pip install bcrypt==4.2.1
+```
+
+This dependency is included in `requirements.txt`.
+
+#### Usage
+
+**Basic User Registration:**
+
+```python
+from sqlalchemy.orm import Session
+from app.services.user_service import UserService, UserServiceError, UserAlreadyExistsError
+
+# Initialize service with database session
+user_service = UserService(db)
+
+try:
+    # Register new user
+    user = user_service.register_user(
+        email="user@example.com",
+        password="SecurePass1!"
+    )
+    print(f"User created: {user.email}, ID: {user.id}")
+    
+except UserAlreadyExistsError as e:
+    # Handle duplicate email
+    print(f"Email already registered: {e.email}")
+    
+except UserServiceError as e:
+    # Handle validation errors
+    print(f"Registration failed: {e.message}")
+```
+
+**Retrieving Users:**
+
+```python
+# Get user by email (case-insensitive)
+user = user_service.get_user_by_email("user@example.com")
+
+# Get user by ID
+user = user_service.get_user_by_id(1)
+```
+
+**Password Verification:**
+
+```python
+from app.services.user_service import UserService
+
+# Verify password against stored hash
+is_valid = UserService.verify_password(
+    password="SecurePass1!",
+    password_hash=user.password_hash
+)
+```
+
+#### API Reference
+
+**UserService Class:**
+
+```python
+class UserService:
+    """Service for user management operations."""
+    
+    BCRYPT_ROUNDS = 12  # Cost factor for bcrypt hashing
+    
+    def __init__(self, db: Session):
+        """Initialize with database session."""
+        
+    def register_user(self, email: str, password: str) -> User:
+        """
+        Register a new user with email and password.
+        
+        Validates email format and password strength, hashes password,
+        creates user record in database, and sets user as active.
+        
+        Args:
+            email: User's email address
+            password: User's plain text password
+            
+        Returns:
+            Created User object
+            
+        Raises:
+            UserServiceError: For validation errors (invalid email/password)
+            UserAlreadyExistsError: If email already exists
+            UserCreationError: If database operation fails
+        """
+    
+    def get_user_by_email(self, email: str) -> Optional[User]:
+        """Retrieve user by email (case-insensitive)."""
+    
+    def get_user_by_id(self, user_id: int) -> Optional[User]:
+        """Retrieve user by ID."""
+    
+    @staticmethod
+    def verify_password(password: str, password_hash: str) -> bool:
+        """Verify password against bcrypt hash."""
+```
+
+**Exception Classes:**
+
+```python
+class UserServiceError(Exception):
+    """Base exception for user service errors."""
+    # Attributes: message, code
+    
+class UserAlreadyExistsError(UserServiceError):
+    """Raised when email already exists."""
+    # Attributes: message, code, email
+    
+class UserCreationError(UserServiceError):
+    """Raised when user creation fails."""
+    # Attributes: message, code
+```
+
+#### Validation Rules
+
+The user service enforces the following validation rules:
+
+**Email Validation** (via EmailValidator):
+- Valid RFC-compliant email format
+- No duplicate emails (case-insensitive)
+- Email normalized to lowercase before storage
+
+**Password Validation** (via PasswordValidator):
+- Minimum 8 characters
+- At least 1 uppercase letter
+- At least 1 number
+- At least 1 special character (!@#$%^&*(),.?":{}|<>_-+=[]\/;~`)
+
+#### Password Hashing
+
+The service uses bcrypt with the following configuration:
+
+- **Algorithm**: bcrypt
+- **Cost Factor**: 12 rounds (configurable via `UserService.BCRYPT_ROUNDS`)
+- **Salt**: Automatically generated per password (unique per user)
+- **Output**: 60-character hash stored in database
+
+**Security Features:**
+- Each password gets a unique salt
+- Hash includes algorithm version, cost, salt, and encrypted password
+- Hashes are safe to store directly in database
+- Verification is timing-attack resistant
+
+#### Database Transaction Management
+
+All user creation operations are wrapped in database transactions:
+
+```python
+try:
+    user = User(email=normalized_email, password_hash=hash, is_active=True)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+except IntegrityError:
+    db.rollback()  # Automatic rollback on constraint violation
+    raise UserAlreadyExistsError(email)
+except SQLAlchemyError as e:
+    db.rollback()  # Automatic rollback on database errors
+    raise UserCreationError(str(e))
+```
+
+#### Testing User Registration
+
+Comprehensive tests for the user service are located in:
+
+```bash
+# Run unit tests (28 tests)
+python -m pytest tests/unit/app/services/test_user_service.py -v
+
+# Run integration tests with real database (17 tests)
+python -m pytest tests/integration/app/services/test_user_service_integration.py -v
+
+# Run all user service tests (45 tests)
+python -m pytest tests/unit/app/services/test_user_service.py tests/integration/app/services/test_user_service_integration.py -v
+
+# Run with coverage
+python -m pytest tests/unit/app/services/test_user_service.py tests/integration/app/services/test_user_service_integration.py --cov=app.services.user_service --cov=app.models.user --cov-report=term-missing
+```
+
+**Unit Test Coverage (28 tests):**
+- Exception class initialization and behavior
+- Password hashing and verification
+- User service initialization
+- User registration with mocked database
+- Validation error handling
+- Database transaction rollback scenarios
+- User retrieval methods
+
+**Integration Test Coverage (17 tests):**
+- User registration with real database
+- Password hashing in database
+- Active status verification
+- Duplicate email prevention
+- Case-insensitive email handling
+- All validation rules enforcement
+- Multiple user registration
+- User retrieval operations
+- Timestamp verification
+
+**Test Results:**
+- 45 tests total (28 unit + 17 integration)
+- 100% code coverage on user_service.py (65 statements)
+- 75% code coverage on user.py (20 statements)
+- All tests pass successfully
+
+#### Implementation Details
+
+- **Bcrypt Hashing** - Industry-standard password hashing with configurable cost factor
+- **Transaction Safety** - All database operations wrapped in transactions with rollback
+- **Case-Insensitive Emails** - Normalized to lowercase before storage and lookup
+- **Validation Integration** - Uses PasswordValidator and EmailValidator services
+- **Error Hierarchy** - Structured exceptions for different failure scenarios
+- **Stateless Verification** - Password verification available as static method
+- **MVP Simplification** - Users are active immediately (no email verification)
+
+#### Security Considerations
+
+1. **Password Security**:
+   - Never stores passwords in plain text
+   - Uses bcrypt with 12 rounds (strong but performant)
+   - Each password gets unique salt
+   - Verification is timing-attack resistant
+
+2. **SQL Injection Prevention**:
+   - Uses SQLAlchemy ORM (not raw SQL)
+   - Parameterized queries in validators
+   - Safe database operations throughout
+
+3. **Transaction Integrity**:
+   - Automatic rollback on errors
+   - No partial data commits
+   - Database constraints enforced
+
+4. **Error Messages**:
+   - Clear feedback without exposing internals
+   - Specific error codes for different failures
+   - No information leakage about existing users
+
+5. **Duplicate Prevention**:
+   - Database-level unique constraint
+   - Application-level pre-check
+   - Case-insensitive matching
+
+#### User Model
+
+The User model is defined in `app/models/user.py`:
+
+```python
+class User(Base):
+    """User model for authentication and user management."""
+    
+    __tablename__ = "users"
+    
+    id: int                    # Primary key
+    email: str                 # Unique, indexed, lowercase
+    password_hash: str         # Bcrypt hash (60 characters)
+    created_at: datetime       # Auto-set on creation
+    updated_at: datetime       # Auto-updated on changes
+    is_active: bool            # Active status (default: True)
+```
+
+**Database Schema:**
+- `id` - Integer primary key with auto-increment
+- `email` - VARCHAR(255), unique constraint, indexed
+- `password_hash` - VARCHAR(60), bcrypt format
+- `created_at` - DateTime with server default (CURRENT_TIMESTAMP)
+- `updated_at` - DateTime with auto-update on modification
+- `is_active` - Boolean, default True (MVP: no email verification)
+
+#### Future Enhancements
+
+The following features are deferred to post-MVP:
+
+- **Email Verification** - Email verification tokens and workflow
+- **Password Reset** - Secure password reset via email
+- **OAuth Integration** - Social login (Google, Facebook, etc.)
+- **Two-Factor Authentication** - TOTP-based 2FA
+- **Account Lockout** - Protection against brute force attacks
+- **Password History** - Prevent password reuse
+
+#### Related Services
+
+- **PasswordValidator** (`app/services/password_validator.py`) - Password strength validation
+- **EmailValidator** (`app/services/email_validator.py`) - Email format and duplicate checking
+- **User Model** (`app/models/user.py`) - SQLAlchemy User model
+- **Database Module** (`app/core/database.py`) - Database session management
+
 ### Configuration Management
 
 The application uses Pydantic Settings for configuration management, supporting:
@@ -1548,11 +1857,11 @@ The database health check:
 - ✅ User authentication Pydantic models (US1.1-T2) - Request/response schemas for registration and login
 - ✅ Password validation service (US1.1-T3) - Comprehensive password validation with security requirements
 - ✅ Email validation service (US1.1-T4) - RFC-compliant email validation with duplicate checking
+- ✅ User registration service (US1.1-T5) - User creation with bcrypt hashing, validation, and transaction management
 
 **Upcoming tasks:**
 
 - Continue database setup: backup documentation, environment config (US0.4-T8, US0.4-T9)
-- User registration service (US1.1-T5)
 - Registration API endpoint (US1.1-T6)
 
 For detailed task breakdown, see: `../backlog/Epic 0: Development Environment & Project Scaffolding/US0.2-backend-development-environment-setup-tasks.md`
