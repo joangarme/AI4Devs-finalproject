@@ -16,15 +16,20 @@ from app.core.database import Base, get_db
 from app.models.user import User
 
 
-# Create in-memory SQLite database for testing
-# Using StaticPool to maintain the same connection across threads
+# Module-level setup for test database
+# Note: This is intentionally at module scope to share the engine across tests
+# within this module for performance, but we clean data between tests
 TEST_DATABASE_URL = "sqlite:///:memory:"
 
+# Create engine once per module
 engine = create_engine(
     TEST_DATABASE_URL,
     connect_args={"check_same_thread": False},
     poolclass=StaticPool,
 )
+
+# Create tables once
+Base.metadata.create_all(bind=engine)
 
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -38,31 +43,54 @@ def override_get_db():
         db.close()
 
 
-# Override the database dependency
-app.dependency_overrides[get_db] = override_get_db
-
 # Create test client
 client = TestClient(app)
 
+# Store original overrides to restore later
+_original_overrides = app.dependency_overrides.copy()
 
-@pytest.fixture(scope="function")
+
+@pytest.fixture(scope="module", autouse=True)
+def setup_test_database():
+    """Set up test database for this module."""
+    # Override the database dependency for this module
+    app.dependency_overrides[get_db] = override_get_db
+    yield
+    # Restore original overrides after all tests in module complete
+    app.dependency_overrides = _original_overrides
+
+
+@pytest.fixture(scope="function", autouse=True)
 def db():
     """
-    Create a fresh database for each test.
+    Create a fresh database for each test function.
     
-    Creates all tables before the test and drops them after.
+    Cleans all data before and after each test to ensure isolation.
     """
-    # Create all tables
-    Base.metadata.create_all(bind=engine)
-    
-    # Create a new session for the test
+    # Create a session for setup
     session = TestingSessionLocal()
     
-    yield session
+    # Delete all existing data to ensure clean state before test
+    try:
+        session.query(User).delete()
+        session.commit()
+    except Exception:
+        session.rollback()
+    finally:
+        session.close()
     
-    # Cleanup after test
-    session.close()
-    Base.metadata.drop_all(bind=engine)
+    # Yield a new session for the test
+    test_session = TestingSessionLocal()
+    yield test_session
+    
+    # Cleanup after test - delete all data
+    try:
+        test_session.query(User).delete()
+        test_session.commit()
+    except Exception:
+        test_session.rollback()
+    finally:
+        test_session.close()
 
 
 class TestRegisterEndpointIntegration:

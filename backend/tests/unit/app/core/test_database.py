@@ -165,11 +165,6 @@ class TestDeclarativeBase:
         assert hasattr(Base, 'metadata')
         assert Base.metadata is not None
     
-    def test_base_metadata_is_empty_initially(self):
-        """Test that Base metadata has no tables initially (no models defined yet)."""
-        # Since we haven't defined any models yet, tables should be empty
-        assert len(Base.metadata.tables) == 0
-    
     def test_base_can_create_tables(self):
         """Test that Base can create tables in a test database."""
         # Create a temporary in-memory database for testing
