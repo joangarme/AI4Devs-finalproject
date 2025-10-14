@@ -597,6 +597,152 @@ Visit the registration page (`/register`) to see the form in action with:
 - Loading state simulation
 - Accessible form interactions
 
+---
+
+#### Register Page Implementation (US1.1-T9)
+
+The `Register` page provides a complete user registration flow with API integration, error handling, and auto-login functionality.
+
+**Location:** `src/pages/Register.tsx`
+
+**Key Features:**
+
+- **API Integration**: Connects to backend `/auth/register` endpoint
+- **React Query**: Uses `useMutation` for optimized API state management
+- **Success Feedback**: Displays success message upon account creation
+- **Auto-Login**: Automatically logs user in after successful registration
+- **Dashboard Redirect**: Redirects to dashboard after 1.5 seconds
+- **Error Handling**: Displays both general and field-specific errors
+- **Loading States**: Shows loading indicator during API calls
+- **Token Management**: Stores JWT token and user data in localStorage
+
+**Implementation Details:**
+
+```typescript
+import { useMutation } from '@tanstack/react-query';
+import { authService, getErrorMessage } from '../services';
+
+// Registration mutation
+const registrationMutation = useMutation({
+  mutationFn: async (data: RegistrationFormData) => {
+    return await authService.register({
+      email: data.email,
+      password: data.password,
+    });
+  },
+  onSuccess: (data) => {
+    // Store auth token and user data
+    authService.setAuthToken(data.access_token);
+    authService.setUser({
+      id: data.id,
+      email: data.email,
+      is_active: data.is_active,
+    });
+
+    // Redirect to dashboard
+    navigate('/dashboard');
+  },
+  onError: (error) => {
+    // Display error message
+    setGeneralError(getErrorMessage(error));
+  },
+});
+```
+
+**API Service Architecture:**
+
+The page uses centralized API services for clean separation of concerns:
+
+1. **`apiClient.ts`**: Axios instance with interceptors
+   - Adds auth token to requests
+   - Handles 401 errors with auto-logout
+   - Provides error message extraction utilities
+
+2. **`authService.ts`**: Authentication operations
+   - `register()`: Create new user account
+   - `login()`: Authenticate existing user
+   - `setAuthToken()`: Store JWT token
+   - `setUser()`: Store user data
+   - `isAuthenticated()`: Check auth status
+
+**User Flow:**
+
+1. User fills out registration form with email and password
+2. Client-side validation runs (Zod + React Hook Form)
+3. Form submission triggers `registrationMutation`
+4. API call sent to backend with credentials
+5. Success: Token stored, user data cached, redirect to dashboard
+6. Error: Display appropriate error message to user
+
+**Error Handling:**
+
+The page handles multiple error scenarios:
+
+- **Validation Errors**: Display field-specific messages
+- **Duplicate Email**: Shows 409 conflict error message
+- **Network Errors**: Displays connection error
+- **Server Errors**: Shows generic server error message
+- **Timeout Errors**: Handles request timeouts gracefully
+
+**Environment Configuration:**
+
+Requires the following environment variables in `.env`:
+
+```bash
+VITE_API_BASE_URL=http://localhost:8000
+VITE_API_VERSION=v1
+```
+
+**React Query Setup:**
+
+The page requires React Query provider in `main.tsx`:
+
+```typescript
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    mutations: { retry: 0 },
+    queries: { retry: 1, staleTime: 5 * 60 * 1000 },
+  },
+});
+
+// Wrap app with QueryClientProvider
+<QueryClientProvider client={queryClient}>
+  <App />
+</QueryClientProvider>
+```
+
+**Dependencies Added:**
+
+- `@tanstack/react-query@5.90.2` - Server state management
+- `axios@1.12.2` - HTTP client for API calls
+- `react-router-dom@6.30.1` - Navigation and routing
+
+**Testing:**
+
+To test the complete registration flow:
+
+1. Start the backend server: `cd backend && make dev`
+2. Start the frontend: `cd frontend && npm run dev`
+3. Navigate to `http://localhost:5173/register`
+4. Fill out the form with valid credentials
+5. Submit and verify:
+   - Success message displays
+   - Redirect to dashboard occurs
+   - Token stored in localStorage
+   - User data cached in localStorage
+
+**Security Considerations:**
+
+- Passwords never stored in plain text (hashed on backend)
+- JWT tokens stored in localStorage (consider httpOnly cookies for production)
+- Automatic logout on 401 responses
+- Request timeout prevents hanging connections
+- HTTPS required in production environment
+
+---
+
 ### Form Validation Schema
 
 The frontend uses **Zod** for type-safe form validation that matches backend requirements exactly.
