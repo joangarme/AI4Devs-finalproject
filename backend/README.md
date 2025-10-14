@@ -1043,12 +1043,12 @@ from app.core.exceptions import ValidationException
 def register_user(email: str, password: str):
     # Validate password
     errors = PasswordValidator.validate(password)
-    
+
     if errors:
         # Collect all error messages
         error_messages = [error.message for error in errors]
         raise ValidationException(", ".join(error_messages))
-    
+
     # Proceed with user registration
     # ...
 ```
@@ -1089,6 +1089,182 @@ The test suite includes:
 - **User-friendly messages** - Clear, actionable error messages for users
 - **100% test coverage** - Comprehensive test suite ensures reliability
 - **Immutable validation** - Stateless validator class with class methods
+
+### Email Validation Service
+
+The application includes a comprehensive email validation service that validates email format and checks for duplicates in the database. The service is located in `app/services/email_validator.py` and is used during user registration.
+
+#### Email Validation Features
+
+The email validator provides:
+
+- **RFC-compliant email format validation** - Uses the `email-validator` library for proper email validation
+- **Database duplicate checking** - Prevents registration with existing email addresses
+- **Case-insensitive matching** - Email comparison is case-insensitive (user@example.com = USER@example.com)
+- **Email normalization** - Converts emails to lowercase for consistent storage
+- **SQL injection prevention** - Uses parameterized queries for safe database operations
+
+#### Using the Email Validator
+
+The `EmailValidator` class provides several methods for email validation:
+
+**validate_format(email: str) → List[EmailValidationError]**
+
+Validates email format only, without database checking:
+
+```python
+from app.services.email_validator import EmailValidator
+
+# Validate email format
+errors = EmailValidator.validate_format("user@example.com")
+
+if errors:
+    for error in errors:
+        print(f"{error.code}: {error.message}")
+else:
+    print("Email format is valid!")
+```
+
+**validate(email: str, db: Optional[Session] = None) → List[EmailValidationError]**
+
+Validates email format and optionally checks for duplicates:
+
+```python
+from app.services.email_validator import EmailValidator
+from app.core.database import get_db
+
+# Format validation only (no db session)
+errors = EmailValidator.validate("user@example.com")
+
+# Format validation + duplicate check (with db session)
+db = next(get_db())
+errors = EmailValidator.validate("user@example.com", db)
+
+if errors:
+    for error in errors:
+        print(f"{error.code}: {error.message}")
+else:
+    print("Email is valid and unique!")
+```
+
+**is_valid(email: str, db: Optional[Session] = None) → bool**
+
+Returns `True` if the email meets all requirements:
+
+```python
+from app.services.email_validator import EmailValidator
+
+# Check format only
+if EmailValidator.is_valid("user@example.com"):
+    print("Email format is valid!")
+
+# Check format and duplicates
+if EmailValidator.is_valid("user@example.com", db):
+    print("Email is valid and unique!")
+```
+
+**normalize_email(email: str) → str**
+
+Normalizes an email to lowercase for consistent storage:
+
+```python
+from app.services.email_validator import EmailValidator
+
+normalized = EmailValidator.normalize_email("User@Example.COM")
+print(normalized)  # Output: user@example.com
+```
+
+#### Validation Error Codes
+
+Each validation error includes a code and a user-friendly message:
+
+- **empty_email** - "Email address cannot be empty"
+- **invalid_format** - "Email address is not valid"
+- **duplicate_email** - "An account with this email already exists"
+
+#### Example Usage in Registration
+
+```python
+from app.services.email_validator import EmailValidator
+from app.core.exceptions import ValidationException
+from app.core.database import get_db
+from sqlalchemy.orm import Session
+
+def register_user(email: str, password: str, db: Session):
+    # Validate email format and check for duplicates
+    errors = EmailValidator.validate(email, db)
+
+    if errors:
+        # Collect all error messages
+        error_messages = [error.message for error in errors]
+        raise ValidationException(", ".join(error_messages))
+
+    # Normalize email for storage
+    normalized_email = EmailValidator.normalize_email(email)
+
+    # Proceed with user registration
+    # ...
+```
+
+#### Supported Email Formats
+
+The validator accepts standard RFC-compliant email formats:
+
+**Valid examples:**
+
+- `user@example.com`
+- `user.name@example.com` - Dots in local part
+- `user+tag@example.com` - Plus addressing (email tags)
+- `user_name@example.com` - Underscores
+- `user-name@example.com` - Hyphens
+- `user@subdomain.example.com` - Subdomains
+- `user@example.co.uk` - Country TLDs
+
+**Invalid examples:**
+
+- `invalid-email` - Missing @ symbol
+- `user@` - Missing domain
+- `@example.com` - Missing local part
+- `user name@example.com` - Space in local part
+- `user@@example.com` - Multiple @ symbols
+
+#### Testing Email Validation
+
+Comprehensive tests for the email validator are located in:
+
+```bash
+# Run email validator tests
+python -m pytest tests/unit/app/services/test_email_validator.py -v
+
+# Run with coverage
+python -m pytest tests/unit/app/services/test_email_validator.py --cov=app.services.email_validator --cov-report=term-missing
+```
+
+The test suite includes 33 tests covering:
+
+- Email format validation (valid and invalid formats)
+- Email normalization (lowercase conversion, whitespace stripping)
+- Database duplicate checking (case-insensitive)
+- SQL injection prevention (parameterized queries)
+- Edge cases (long emails, international domains, plus addressing)
+- Error message accuracy and clarity
+
+#### Implementation Details
+
+- **RFC-compliant validation** - Uses `email-validator` library with comprehensive checks
+- **Parameterized queries** - Prevents SQL injection through safe query parameters
+- **Case-insensitive storage** - All emails normalized to lowercase before storage
+- **List of errors** - Returns all validation failures for better user feedback
+- **Optional database checking** - Can validate format only or include duplicate check
+- **100% test coverage** - Comprehensive test suite with 33 unit tests
+- **Stateless validator** - All methods are class methods for easy reuse
+
+#### Security Considerations
+
+1. **SQL Injection Prevention**: Uses parameterized queries with `:email` placeholders
+2. **Case-Insensitive Matching**: Uses `LOWER()` in SQL queries to ensure consistent comparison
+3. **Email Normalization**: Converts all emails to lowercase before database storage
+4. **Clear Error Messages**: Provides actionable feedback without exposing system internals
 
 ### Configuration Management
 
@@ -1371,11 +1547,11 @@ The database health check:
 - ✅ Database management scripts (US0.4-T7) - Makefile with commands for common database operations
 - ✅ User authentication Pydantic models (US1.1-T2) - Request/response schemas for registration and login
 - ✅ Password validation service (US1.1-T3) - Comprehensive password validation with security requirements
+- ✅ Email validation service (US1.1-T4) - RFC-compliant email validation with duplicate checking
 
 **Upcoming tasks:**
 
 - Continue database setup: backup documentation, environment config (US0.4-T8, US0.4-T9)
-- Email validation service (US1.1-T4)
 - User registration service (US1.1-T5)
 - Registration API endpoint (US1.1-T6)
 
